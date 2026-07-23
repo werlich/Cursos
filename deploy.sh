@@ -17,6 +17,7 @@ fi
 source venv/bin/activate
 
 if git remote get-url origin >/dev/null 2>&1; then
+  git config --global --add safe.directory "$(pwd)" 2>/dev/null || true
   export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -i /root/.ssh/signau_deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new}"
   git fetch origin
   git checkout main
