@@ -106,40 +106,49 @@ systemctl daemon-reload
 systemctl enable "${GUNICORN_SERVICE}"
 systemctl start "${GUNICORN_SERVICE}"
 
-echo "=== Apache vhost ${DOMAIN} ==="
-cat > "/etc/apache2/sites-available/cursos-live.conf" <<APACHE
-<VirtualHost *:80>
-    ServerName ${DOMAIN}
-
-    ProxyPreserveHost On
-    RequestHeader set X-Forwarded-Proto "http"
-    ProxyPass /static/ !
-    ProxyPass /media/ !
-    Alias /static/ ${WWW_ROOT}/staticfiles/
-    Alias /media/ ${WWW_ROOT}/media/
-    <Directory ${WWW_ROOT}/staticfiles>
-        Require all granted
-    </Directory>
-    <Directory ${WWW_ROOT}/media>
-        Require all granted
-    </Directory>
-
-    ProxyPass / http://127.0.0.1:${GUNICORN_PORT}/ disablereuse=On
-    ProxyPassReverse / http://127.0.0.1:${GUNICORN_PORT}/
-</VirtualHost>
-APACHE
-
-a2enmod proxy proxy_http headers rewrite >/dev/null
-a2ensite cursos-live.conf
-systemctl reload apache2
-
-echo "=== HTTPS certbot ==="
-certbot --apache -d "${DOMAIN}" --non-interactive --agree-tos --redirect --register-unsafely-without-email \
-  || certbot --apache -d "${DOMAIN}" --non-interactive --agree-tos --redirect
-
 echo "${ADMIN_PASS}" > "/root/.cursos_live_admin_pass"
 echo "${WEBHOOK_TOKEN}" > "/root/.cursos_live_webhook_token"
 chmod 600 /root/.cursos_live_admin_pass /root/.cursos_live_webhook_token
+
+echo "=== Nginx vhost ${DOMAIN} ==="
+cat > "/etc/nginx/sites-available/${DOMAIN}" <<NGINX
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN};
+
+    client_max_body_size 20M;
+
+    location /static/ {
+        alias ${WWW_ROOT}/staticfiles/;
+        access_log off;
+        expires 30d;
+    }
+
+    location /media/ {
+        alias ${WWW_ROOT}/media/;
+        access_log off;
+        expires 7d;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:${GUNICORN_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+}
+NGINX
+
+ln -sfn "/etc/nginx/sites-available/${DOMAIN}" "/etc/nginx/sites-enabled/${DOMAIN}"
+nginx -t
+systemctl reload nginx
+
+echo "=== HTTPS certbot ==="
+certbot --nginx -d "${DOMAIN}" --non-interactive --agree-tos --redirect --register-unsafely-without-email \
+  || certbot --nginx -d "${DOMAIN}" --non-interactive --agree-tos --redirect
 
 echo ""
 echo "=== ${CLIENT_NAME} provisionado ==="
