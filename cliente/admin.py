@@ -93,26 +93,28 @@ class PagamentoAdmin(admin.ModelAdmin):
         "inscricao",
         "valor",
         "status",
-        "asaas_payment_id",
+        "livepix_reference",
         "confirmado_em",
     )
     list_filter = ("status",)
-    search_fields = ("asaas_payment_id", "inscricao__cliente__email")
+    search_fields = (
+        "livepix_payment_id",
+        "livepix_reference",
+        "inscricao__cliente__email",
+    )
     actions = ["action_estornar"]
 
-    @admin.action(description="Estornar no Asaas")
+    @admin.action(description="Marcar estornado (manual na LivePix)")
     def action_estornar(self, request, queryset):
         ok = 0
         for pag in queryset:
-            try:
-                estornar_pagamento(pag)
-                ok += 1
-            except Exception as exc:
-                self.message_user(
-                    request, f"Falha no pagamento {pag.pk}: {exc}", messages.ERROR
-                )
-        if ok:
-            self.message_user(request, f"{ok} estorno(s) processado(s).", messages.SUCCESS)
+            estornar_pagamento(pag)
+            ok += 1
+        self.message_user(
+            request,
+            f"{ok} marcado(s) como estornado. Faça a devolução na carteira LivePix se necessário.",
+            messages.SUCCESS,
+        )
 
 
 @admin.register(Credito)

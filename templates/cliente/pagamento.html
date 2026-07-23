@@ -8,23 +8,23 @@
   </p>
 
   <div class="pix-box">
-    {% if pagamento.pix_qr_code %}
+    {% if pagamento.invoice_url and not demo %}
+      <p>Você será direcionado ao checkout <strong>LivePix</strong> para pagar com PIX (QR Code).</p>
+      <a class="btn primary" id="pay-btn" href="{{ pagamento.invoice_url }}">Pagar com PIX (LivePix)</a>
+    {% elif pagamento.pix_qr_code %}
       <img class="qr" src="{{ pagamento.pix_qr_code }}" alt="QR Code PIX">
     {% endif %}
-    {% if pagamento.pix_copia_cola %}
+    {% if pagamento.pix_copia_cola and pagamento.pix_copia_cola != "CRÉDITO" %}
       <label>PIX Copia e Cola</label>
       <textarea readonly rows="4" id="pix-payload">{{ pagamento.pix_copia_cola }}</textarea>
       <button type="button" class="btn" onclick="navigator.clipboard.writeText(document.getElementById('pix-payload').value)">Copiar</button>
-    {% endif %}
-    {% if pagamento.invoice_url %}
-      <p><a href="{{ pagamento.invoice_url }}" target="_blank" rel="noopener">Abrir fatura Asaas</a></p>
     {% endif %}
   </div>
 
   {% if demo %}
   <form method="post" action="{% url 'cliente:pagamento_demo_confirmar' token=inscricao.token_acesso %}" class="demo-box">
     {% csrf_token %}
-    <p>Modo DEMO (Asaas). Simule a confirmação do pagamento:</p>
+    <p>Modo DEMO (LivePix). Simule a confirmação do pagamento:</p>
     <button type="submit" class="btn primary">Confirmar pagamento (demo)</button>
   </form>
   {% endif %}
@@ -35,6 +35,14 @@
 (function(){
   const url = "{% url 'cliente:status_pagamento' token=inscricao.token_acesso %}";
   const sala = "{% url 'cliente:sala' token=inscricao.token_acesso %}";
+  {% if pagamento.invoice_url and not demo %}
+  // Auto-abre o checkout LivePix uma vez
+  const checkout = "{{ pagamento.invoice_url|escapejs }}";
+  if (checkout && !sessionStorage.getItem("lp_opened_{{ inscricao.token_acesso }}")) {
+    sessionStorage.setItem("lp_opened_{{ inscricao.token_acesso }}", "1");
+    window.location.href = checkout;
+  }
+  {% endif %}
   async function poll(){
     try {
       const r = await fetch(url);

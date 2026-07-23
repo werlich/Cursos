@@ -45,7 +45,6 @@ source venv/bin/activate
 pip install -U pip
 pip install -r requirements.txt gunicorn
 SECRET_KEY="$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')"
-WEBHOOK_TOKEN="$(openssl rand -hex 16)"
 
 echo "=== .env e client.env ==="
 cat > .env <<ENV
@@ -53,15 +52,18 @@ DJANGO_SECRET_KEY=${SECRET_KEY}
 DJANGO_DEBUG=false
 DJANGO_ALLOWED_HOSTS=${DOMAIN},37.60.251.181
 DJANGO_CSRF_TRUSTED_ORIGINS=https://${DOMAIN},http://${DOMAIN}
+SITE_URL=https://${DOMAIN}
 DJANGO_DB_NAME=${DB_NAME}
 DJANGO_DB_USER=${DB_USER}
 DJANGO_DB_PASSWORD=${DB_PASS}
 DJANGO_DB_HOST=127.0.0.1
 DJANGO_DB_PORT=3306
-ASAAS_API_KEY=
-ASAAS_API_URL=https://sandbox.asaas.com/api/v3
-ASAAS_WEBHOOK_TOKEN=${WEBHOOK_TOKEN}
-ASAAS_DEMO=true
+LIVEPIX_CLIENT_ID=
+LIVEPIX_CLIENT_SECRET=
+LIVEPIX_API_URL=https://api.livepix.gg
+LIVEPIX_OAUTH_URL=https://oauth.livepix.gg
+LIVEPIX_SCOPE=payments:write payments:read webhooks account:read
+LIVEPIX_DEMO=true
 MIN_ALUNOS_TURMA=10
 PRECO_PADRAO=29.90
 ENV
@@ -107,8 +109,7 @@ systemctl enable "${GUNICORN_SERVICE}"
 systemctl start "${GUNICORN_SERVICE}"
 
 echo "${ADMIN_PASS}" > "/root/.cursos_live_admin_pass"
-echo "${WEBHOOK_TOKEN}" > "/root/.cursos_live_webhook_token"
-chmod 600 /root/.cursos_live_admin_pass /root/.cursos_live_webhook_token
+chmod 600 /root/.cursos_live_admin_pass
 
 echo "=== Nginx vhost ${DOMAIN} ==="
 cat > "/etc/nginx/sites-available/${DOMAIN}" <<NGINX
@@ -154,7 +155,7 @@ echo ""
 echo "=== ${CLIENT_NAME} provisionado ==="
 echo "URL:     https://${DOMAIN}"
 echo "Admin:   admin / $(cat /root/.cursos_live_admin_pass)"
-echo "Webhook: https://${DOMAIN}/webhooks/asaas/  (token em /root/.cursos_live_webhook_token)"
+echo "Webhook: https://${DOMAIN}/webhooks/livepix/"
 echo "Path:    ${WWW_ROOT}"
 echo "Gunicorn:${GUNICORN_SERVICE} :${GUNICORN_PORT}"
-echo "Configure ASAAS_API_KEY em ${WWW_ROOT}/.env e ASAAS_DEMO=false para produção."
+echo "Configure LIVEPIX_CLIENT_ID / LIVEPIX_CLIENT_SECRET em ${WWW_ROOT}/.env e LIVEPIX_DEMO=false."

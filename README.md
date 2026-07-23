@@ -1,13 +1,13 @@
 # SIGNAU Cursos Live
 
-Plataforma de aulas online em **live.signau.cc**: cadastro de interessados, pagamento PIX (Asaas) e sala com link OBS.
+Plataforma de aulas online em **live.signau.cc**: cadastro de interessados, pagamento PIX (**LivePix**) e sala com link OBS.
 
 ## Stack
 
 - Django + Jazzmin
 - App **Cliente** (cadastro, lives, pagamentos, créditos)
-- Asaas PIX QR (modo `ASAAS_DEMO=true` para desenvolvimento)
-- Deploy VPS no padrão SIGNAU (Apache + Gunicorn + MySQL)
+- LivePix checkout PIX (`LIVEPIX_DEMO=true` para desenvolvimento)
+- Deploy VPS no padrão SIGNAU (Nginx + Gunicorn + MySQL)
 
 ## Cursos e preço
 
@@ -18,7 +18,7 @@ Plataforma de aulas online em **live.signau.cc**: cadastro de interessados, paga
 | Mestre-Amador | R$ 29,90 |
 | Capitão-Amador | R$ 29,90 |
 
-Lives: **segundas, quartas e sextas**. Turma mínima: **10** pagamentos. Se não fechar, o valor vira **crédito** para a próxima live (estorno manual no admin via Asaas).
+Lives: **segundas, quartas e sextas**. Turma mínima: **10** pagamentos. Se não fechar, o valor vira **crédito** para a próxima live (estorno manual no admin / carteira LivePix).
 
 ## Local
 
@@ -36,25 +36,20 @@ python manage.py runserver
 ## Produção (VPS)
 
 1. DNS `live.signau.cc` → VPS
-2. Na VPS (após push do código):
-
-```bash
-scp deploy/provision_cursos.sh root@37.60.251.181:/root/
-ssh root@37.60.251.181 'bash /root/provision_cursos.sh live live.signau.cc 8003 "Cursos Live"'
-```
-
-3. Deploys seguintes:
+2. Provision (primeira vez) via `deploy/provision_cursos.sh`
+3. Deploys:
 
 ```bash
 git push origin main
 ./deploy_vps.sh --client live
 ```
 
-4. Asaas: preencha `ASAAS_API_KEY` no `.env` da VPS, `ASAAS_DEMO=false`, configure o webhook `https://live.signau.cc/webhooks/asaas/` com o token gerado.
+4. LivePix: em `/var/www/cursos/.env` preencha `LIVEPIX_CLIENT_ID`, `LIVEPIX_CLIENT_SECRET`, `LIVEPIX_DEMO=false`.
+5. Webhook: `https://live.signau.cc/webhooks/livepix/` (painel LivePix ou `POST /v2/webhooks`).
 
 ## Fluxo do aluno
 
 1. Acessa `https://live.signau.cc`
 2. Informa nome, e-mail, WhatsApp e escolhe a live
-3. Paga via QR PIX Asaas
-4. Recebe acesso à sala (link OBS quando o admin publicar `stream_url`)
+3. É redirecionado ao checkout LivePix (PIX)
+4. Após pagamento, volta à sala (link OBS quando o admin publicar `stream_url`)

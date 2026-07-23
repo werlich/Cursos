@@ -7,41 +7,57 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.db import transaction
+from django.urls import reverse
 from django.utils import timezone
 
-from .asaas import AsaasClient, AsaasError
+from .livepix import LivePixClient, LivePixError
 from .models import Credito, Inscricao, Live, Pagamento
 
 logger = logging.getLogger(__name__)
 
 
-def criar_pagamento_pix(inscricao: Inscricao, valor: Decimal | None = None) -> Pagamento:
-    """Cria cobrança PIX no Asaas (ou DEMO) vinculada à inscrição."""
+def _absolute_retorno_url(request, token: str) -> str:
+    path = reverse("cliente:pagamento_retorno", kwargs={"token": token})
+    if request is not None:
+        return request.build_absolute_uri(path)
+    base = getattr(settings, "SITE_URL", "https://live.signau.cc").rstrip("/")
+    return f"{base}{path}"
+
+
+def criar_pagamento_pix(
+    inscricao: Inscricao,
+    valor: Decimal | None = None,
+    *,
+    request=None,
+) -> Pagamento:
+    """Cria cobrança PIX no LivePix (ou DEMO) vinculada à inscrição."""
     existing = Pagamento.objects.filter(inscricao=inscricao).first()
     if existing:
         return existing
 
     valor = valor if valor is not None else inscricao.live.curso.preco
-    client = AsaasClient()
-    customer_id = client.ensure_customer(
-        nome=inscricao.cliente.nome,
-        email=inscricao.cliente.email,
-        whatsapp=inscricao.cliente.whatsapp,
-    )
-    charge = client.create_pix_charge(
-        customer_id=customer_id,
-        valor=valor,
-        descricao=f"SIGNAU Live — {inscricao.live.curso.nome} — {inscricao.live.titulo}",
-        external_reference=f"insc-{inscricao.pk}",
-    )
+    client = LivePixClient()
+    retorno = _absolute_retorno_url(request, inscricao.token_acesso)
+    charge = client.create_payment(amount=valor, redirect_url=retorno)
+
+    checkout = charge.get("checkout_url") or ""
+    if client.demo and not checkout:
+        checkout = reverse(
+            "cliente:pagamento_demo_confirmar",
+            kwargs={"token": inscricao.token_acesso},
+        )
+        if request is not None:
+            # demo confirma via POST na própria página; invoice aponta para a página de pagamento
+            checkout = request.build_absolute_uri(
+                reverse("cliente:pagamento", kwargs={"token": inscricao.token_acesso})
+            )
+
     return Pagamento.objects.create(
         inscricao=inscricao,
         valor=valor,
-        asaas_payment_id=charge["payment_id"],
-        asaas_customer_id=customer_id,
-        pix_qr_code=charge["pix_qr_code"],
-        pix_copia_cola=charge["pix_copia_cola"],
-        invoice_url=charge.get("invoice_url") or "",
+        livepix_payment_id=charge["payment_id"],
+        livepix_reference=charge["reference"],
+        invoice_url=checkout,
         status=Pagamento.Status.PENDENTE,
     )
 
@@ -79,7 +95,7 @@ def emitir_creditos_se_nao_atingiu(live: Live, *, forcar: bool = False) -> int:
     """
     Se a live não atingiu o mínimo, converte pagamentos em créditos para a próxima live.
     Retorna quantidade de créditos emitidos.
-    Política padrão (briefing): crédito para próxima live; estorno manual via admin.
+    Política padrão: crédito para próxima live; estorno manual via admin.
     """
     if live.status == Live.Status.CREDITO and not forcar:
         return 0
@@ -144,7 +160,8 @@ def aplicar_credito(cliente, live: Live) -> Inscricao | None:
             "status": Pagamento.Status.CONFIRMADO,
             "confirmado_em": timezone.now(),
             "pix_copia_cola": "CRÉDITO",
-            "asaas_payment_id": f"credito-{credito.pk}",
+            "livepix_payment_id": f"credito-{credito.pk}",
+            "livepix_reference": f"credito-{credito.pk}",
         },
     )
     avaliar_turma(live)
@@ -152,18 +169,48 @@ def aplicar_credito(cliente, live: Live) -> Inscricao | None:
 
 
 def estornar_pagamento(pagamento: Pagamento) -> None:
-    client = AsaasClient()
-    try:
-        if pagamento.asaas_payment_id:
-            client.refund(pagamento.asaas_payment_id, valor=pagamento.valor)
-    except AsaasError as exc:
-        logger.exception("Falha ao estornar no Asaas: %s", exc)
-        raise
+    """Marca estorno local. Devolução na carteira LivePix é manual."""
     pagamento.status = Pagamento.Status.ESTORNADO
     pagamento.save(update_fields=["status"])
     insc = pagamento.inscricao
     insc.status = Inscricao.Status.ESTORNADO
     insc.save(update_fields=["status"])
+
+
+def buscar_pagamento_livepix(*, payment_id: str = "", reference: str = "") -> Pagamento | None:
+    qs = Pagamento.objects.select_related("inscricao")
+    if payment_id:
+        pag = qs.filter(livepix_payment_id=payment_id).first()
+        if pag:
+            return pag
+        pag = qs.filter(livepix_reference=payment_id).first()
+        if pag:
+            return pag
+    if reference:
+        pag = qs.filter(livepix_reference=reference).first()
+        if pag:
+            return pag
+        return qs.filter(livepix_payment_id=reference).first()
+    return None
+
+
+def sincronizar_status_livepix(pagamento: Pagamento) -> bool:
+    """Consulta API LivePix; se pagamento existir/confirmado, confirma localmente."""
+    if pagamento.status == Pagamento.Status.CONFIRMADO:
+        return True
+    pid = pagamento.livepix_payment_id or pagamento.livepix_reference
+    if not pid or pid.startswith("demo_") or pid.startswith("credito-"):
+        return False
+    try:
+        data = LivePixClient().get_payment(pid)
+    except LivePixError as exc:
+        logger.warning("Falha ao consultar LivePix %s: %s", pid, exc)
+        return False
+    if data:
+        # Pagamento recebido existe na API → considerar pago
+        confirmar_pagamento(pagamento)
+        return True
+    return False
 
 
 def min_alunos_default() -> int:

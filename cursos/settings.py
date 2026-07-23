@@ -132,11 +132,18 @@ LOGOUT_REDIRECT_URL = "/"
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# Asaas
-ASAAS_API_KEY = os.environ.get("ASAAS_API_KEY", "")
-ASAAS_API_URL = os.environ.get("ASAAS_API_URL", "https://sandbox.asaas.com/api/v3").rstrip("/")
-ASAAS_WEBHOOK_TOKEN = os.environ.get("ASAAS_WEBHOOK_TOKEN", "")
-ASAAS_DEMO = os.environ.get("ASAAS_DEMO", "true").lower() in ("1", "true", "yes")
+SITE_URL = os.environ.get("SITE_URL", "https://live.signau.cc").rstrip("/")
+
+# LivePix
+LIVEPIX_CLIENT_ID = os.environ.get("LIVEPIX_CLIENT_ID", "")
+LIVEPIX_CLIENT_SECRET = os.environ.get("LIVEPIX_CLIENT_SECRET", "")
+LIVEPIX_API_URL = os.environ.get("LIVEPIX_API_URL", "https://api.livepix.gg").rstrip("/")
+LIVEPIX_OAUTH_URL = os.environ.get("LIVEPIX_OAUTH_URL", "https://oauth.livepix.gg").rstrip("/")
+LIVEPIX_SCOPE = os.environ.get(
+    "LIVEPIX_SCOPE",
+    "payments:write payments:read webhooks account:read",
+)
+LIVEPIX_DEMO = os.environ.get("LIVEPIX_DEMO", "true").lower() in ("1", "true", "yes")
 
 MIN_ALUNOS_TURMA = int(os.environ.get("MIN_ALUNOS_TURMA", "10"))
 PRECO_PADRAO = os.environ.get("PRECO_PADRAO", "29.90")

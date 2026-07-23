@@ -157,11 +157,11 @@ class Pagamento(models.Model):
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDENTE
     )
-    asaas_payment_id = models.CharField(max_length=64, blank=True, db_index=True)
-    asaas_customer_id = models.CharField(max_length=64, blank=True)
+    livepix_payment_id = models.CharField(max_length=64, blank=True, db_index=True)
+    livepix_reference = models.CharField(max_length=64, blank=True, db_index=True)
     pix_qr_code = models.TextField(blank=True, help_text="Imagem QR em base64 ou URL")
     pix_copia_cola = models.TextField(blank=True)
-    invoice_url = models.URLField(blank=True)
+    invoice_url = models.URLField(blank=True, help_text="URL do checkout LivePix")
     criado_em = models.DateTimeField(auto_now_add=True)
     confirmado_em = models.DateTimeField(null=True, blank=True)
 

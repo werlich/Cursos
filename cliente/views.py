@@ -1,4 +1,4 @@
-"""Views públicas e webhook Asaas."""
+"""Views públicas e webhook LivePix."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
@@ -17,14 +16,18 @@ from .forms import CadastroInscricaoForm
 from .models import Curso, Inscricao, Live, Pagamento
 from .services import (
     aplicar_credito,
+    buscar_pagamento_livepix,
     confirmar_pagamento,
     criar_pagamento_pix,
+    sincronizar_status_livepix,
 )
 
 logger = logging.getLogger(__name__)
 
 
 def _lives_abertas():
+    from django.utils import timezone
+
     return (
         Live.objects.filter(
             status__in=[Live.Status.ABERTA, Live.Status.CONFIRMADA],
@@ -82,7 +85,7 @@ def cadastro(request: HttpRequest) -> HttpResponse:
                         return redirect("cliente:sala", token=insc.token_acesso)
                     if not created and hasattr(insc, "pagamento"):
                         return redirect("cliente:pagamento", token=insc.token_acesso)
-                    pagamento = criar_pagamento_pix(insc)
+                    criar_pagamento_pix(insc, request=request)
             except IntegrityError:
                 form.add_error(None, "Já existe inscrição para este e-mail nesta live.")
             except Exception as exc:
@@ -111,18 +114,35 @@ def pagamento(request: HttpRequest, token: str) -> HttpResponse:
         return redirect("cliente:sala", token=token)
     pagamento_obj = getattr(insc, "pagamento", None)
     if pagamento_obj is None:
-        pagamento_obj = criar_pagamento_pix(insc)
+        pagamento_obj = criar_pagamento_pix(insc, request=request)
     return render(
         request,
         "cliente/pagamento.html",
-        {"inscricao": insc, "pagamento": pagamento_obj, "demo": getattr(settings, "ASAAS_DEMO", True)},
+        {
+            "inscricao": insc,
+            "pagamento": pagamento_obj,
+            "demo": getattr(settings, "LIVEPIX_DEMO", True),
+        },
     )
+
+
+@require_GET
+def pagamento_retorno(request: HttpRequest, token: str) -> HttpResponse:
+    """Retorno do checkout LivePix — tenta sincronizar e manda para sala ou pagamento."""
+    insc = get_object_or_404(Inscricao, token_acesso=token)
+    pag = getattr(insc, "pagamento", None)
+    if pag:
+        sincronizar_status_livepix(pag)
+        insc.refresh_from_db()
+    if insc.status in (Inscricao.Status.PAGO, Inscricao.Status.CONFIRMADO):
+        return redirect("cliente:sala", token=token)
+    return redirect("cliente:pagamento", token=token)
 
 
 @require_POST
 def pagamento_demo_confirmar(request: HttpRequest, token: str) -> HttpResponse:
-    """Somente em ASAAS_DEMO: simula confirmação PIX."""
-    if not getattr(settings, "ASAAS_DEMO", True):
+    """Somente em LIVEPIX_DEMO: simula confirmação PIX."""
+    if not getattr(settings, "LIVEPIX_DEMO", True):
         return HttpResponseForbidden("Disponível apenas em modo DEMO")
     insc = get_object_or_404(Inscricao, token_acesso=token)
     pag = get_object_or_404(Pagamento, inscricao=insc)
@@ -167,38 +187,41 @@ def sala(request: HttpRequest, token: str) -> HttpResponse:
 
 @csrf_exempt
 @require_POST
-def asaas_webhook(request: HttpRequest) -> HttpResponse:
-    token = getattr(settings, "ASAAS_WEBHOOK_TOKEN", "") or ""
-    header_token = request.headers.get("asaas-access-token") or request.GET.get("token", "")
-    if token and header_token != token:
-        return HttpResponseForbidden("token inválido")
-
+def livepix_webhook(request: HttpRequest) -> HttpResponse:
+    """
+    Webhook LivePix — evento new + resource.type payment.
+    Payload mínimo: { event, resource: { id, reference, type } }
+    """
     try:
         payload = json.loads(request.body.decode() or "{}")
     except json.JSONDecodeError:
         return JsonResponse({"ok": False, "error": "json"}, status=400)
 
     event = payload.get("event") or ""
-    payment = payload.get("payment") or {}
-    payment_id = payment.get("id") or ""
-    if not payment_id:
-        return JsonResponse({"ok": True, "ignored": True})
+    resource = payload.get("resource") or {}
+    rtype = resource.get("type") or ""
+    payment_id = resource.get("id") or ""
+    reference = resource.get("reference") or ""
 
-    try:
-        pag = Pagamento.objects.select_related("inscricao").get(asaas_payment_id=payment_id)
-    except Pagamento.DoesNotExist:
-        logger.warning("Webhook Asaas para payment desconhecido: %s", payment_id)
+    if rtype and rtype != "payment":
+        return JsonResponse({"ok": True, "ignored": True, "reason": "not_payment"})
+
+    if event and event not in ("new", "payment", "PAYMENT_RECEIVED"):
+        # aceitar "new" (doc) e variações
+        if event not in ("new",):
+            logger.info("Webhook LivePix evento ignorado: %s", event)
+            return JsonResponse({"ok": True, "ignored": True, "event": event})
+
+    pag = buscar_pagamento_livepix(payment_id=payment_id, reference=reference)
+    if not pag:
+        logger.warning(
+            "Webhook LivePix pagamento desconhecido id=%s ref=%s", payment_id, reference
+        )
         return JsonResponse({"ok": True, "unknown": True})
 
-    if event in ("PAYMENT_RECEIVED", "PAYMENT_CONFIRMED"):
-        confirmar_pagamento(pag)
-    elif event in ("PAYMENT_REFUNDED", "PAYMENT_PARTIALLY_REFUNDED"):
-        pag.status = Pagamento.Status.ESTORNADO
-        pag.save(update_fields=["status"])
-        pag.inscricao.status = Inscricao.Status.ESTORNADO
-        pag.inscricao.save(update_fields=["status"])
-    elif event == "PAYMENT_OVERDUE":
-        pag.status = Pagamento.Status.EXPIRADO
-        pag.save(update_fields=["status"])
+    if payment_id and not pag.livepix_payment_id:
+        pag.livepix_payment_id = payment_id
+        pag.save(update_fields=["livepix_payment_id"])
 
+    confirmar_pagamento(pag)
     return JsonResponse({"ok": True})
