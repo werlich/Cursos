@@ -1,0 +1,31 @@
+{% extends "cliente/base.html" %}
+{% block title %}Sala ao vivo — {{ live.titulo }}{% endblock %}
+{% block content %}
+<section class="section">
+  <h1>{{ live.titulo }}</h1>
+  <p class="section-sub">
+    {{ live.curso.nome }} · {{ live.data_hora|date:"d/m/Y H:i" }} ·
+    Status: {{ live.get_status_display }} ·
+    {{ inscritos }}/{{ min_alunos }} pagos
+  </p>
+
+  {% if live.status == "credito" %}
+    <div class="alert">
+      Esta turma não atingiu {{ min_alunos }} alunos. Seu pagamento foi convertido em
+      <strong>crédito</strong> para a próxima live. Entre em contato pelo WhatsApp se preferir estorno.
+    </div>
+  {% elif not stream_url %}
+    <div class="alert">
+      Pagamento confirmado. O link da transmissão OBS será publicado aqui antes do início.
+      {% if faltam %}Faltam {{ faltam }} inscrição(ões) paga(s) para fechar a turma.{% endif %}
+    </div>
+  {% else %}
+    <div class="stream-frame">
+      <p><a class="btn primary" href="{{ stream_url }}" target="_blank" rel="noopener">Entrar na transmissão OBS</a></p>
+      <p class="help">Link publicado pelo instrutor (YouTube Live / player OBS).</p>
+    </div>
+  {% endif %}
+
+  <p class="muted">Acesso de {{ inscricao.cliente.nome }} · guarde este link da sala.</p>
+</section>
+{% endblock %}

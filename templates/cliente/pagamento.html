@@ -1,0 +1,53 @@
+{% extends "cliente/base.html" %}
+{% block title %}Pagamento PIX — SIGNAU Cursos{% endblock %}
+{% block content %}
+<section class="section narrow">
+  <h1>Pagamento via PIX</h1>
+  <p class="section-sub">
+    {{ inscricao.live.titulo }} · {{ inscricao.cliente.nome }} · R$ {{ pagamento.valor }}
+  </p>
+
+  <div class="pix-box">
+    {% if pagamento.pix_qr_code %}
+      <img class="qr" src="{{ pagamento.pix_qr_code }}" alt="QR Code PIX">
+    {% endif %}
+    {% if pagamento.pix_copia_cola %}
+      <label>PIX Copia e Cola</label>
+      <textarea readonly rows="4" id="pix-payload">{{ pagamento.pix_copia_cola }}</textarea>
+      <button type="button" class="btn" onclick="navigator.clipboard.writeText(document.getElementById('pix-payload').value)">Copiar</button>
+    {% endif %}
+    {% if pagamento.invoice_url %}
+      <p><a href="{{ pagamento.invoice_url }}" target="_blank" rel="noopener">Abrir fatura Asaas</a></p>
+    {% endif %}
+  </div>
+
+  {% if demo %}
+  <form method="post" action="{% url 'cliente:pagamento_demo_confirmar' token=inscricao.token_acesso %}" class="demo-box">
+    {% csrf_token %}
+    <p>Modo DEMO (Asaas). Simule a confirmação do pagamento:</p>
+    <button type="submit" class="btn primary">Confirmar pagamento (demo)</button>
+  </form>
+  {% endif %}
+
+  <p class="status-line" id="status">Aguardando pagamento…</p>
+</section>
+<script>
+(function(){
+  const url = "{% url 'cliente:status_pagamento' token=inscricao.token_acesso %}";
+  const sala = "{% url 'cliente:sala' token=inscricao.token_acesso %}";
+  async function poll(){
+    try {
+      const r = await fetch(url);
+      const d = await r.json();
+      if (d.pago) {
+        document.getElementById('status').textContent = 'Pagamento confirmado! Redirecionando…';
+        location.href = sala;
+        return;
+      }
+    } catch(e) {}
+    setTimeout(poll, 4000);
+  }
+  poll();
+})();
+</script>
+{% endblock %}

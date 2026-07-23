@@ -1,0 +1,13 @@
+# Django / Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+db.sqlite3
+.env
+staticfiles/
+media/
+*.log
+.DS_Store
+client.env

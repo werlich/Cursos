@@ -1,0 +1,157 @@
+:root {
+  --bg: #0c1a24;
+  --bg2: #132a38;
+  --ink: #e8f1f6;
+  --muted: #9bb4c4;
+  --accent: #2bb0a6;
+  --accent2: #f0b429;
+  --card: rgba(255, 255, 255, 0.06);
+  --line: rgba(255, 255, 255, 0.12);
+  --font: "DM Sans", system-ui, sans-serif;
+  --display: "Instrument Serif", Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #1a4a5c 0%, transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, #16383a 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg), var(--bg2) 40%, #0a141c);
+  min-height: 100vh;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.brand span { color: var(--accent); font-weight: 600; }
+.site-header nav { display: flex; gap: 1.2rem; }
+.site-footer {
+  padding: 2rem 1.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--line);
+  margin-top: 3rem;
+}
+
+main { max-width: 960px; margin: 0 auto; padding: 0 1.25rem 2rem; }
+
+.hero {
+  padding: 4.5rem 0 2.5rem;
+  animation: rise 0.7s ease both;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: var(--accent2);
+  margin: 0 0 0.6rem;
+}
+.brand-hero {
+  font-family: var(--display);
+  font-size: clamp(2.8rem, 8vw, 4.6rem);
+  font-weight: 400;
+  line-height: 1.05;
+  margin: 0 0 0.8rem;
+}
+.lead { color: var(--muted); max-width: 34rem; font-size: 1.1rem; }
+.cta-row { margin-top: 1.5rem; }
+
+.section { margin: 2.5rem 0; animation: rise 0.8s ease both; }
+.section.narrow { max-width: 520px; }
+.section h2, .section h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 2rem;
+  margin: 0 0 0.4rem;
+}
+.section-sub { color: var(--muted); margin: 0 0 1.2rem; }
+
+.course-list, .live-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.8rem; }
+.course-list li, .live-list li, .pix-box, .card-form, .alert, .demo-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+.course-list li { display: grid; grid-template-columns: 1fr auto; gap: 0.25rem 1rem; }
+.course-list li p { grid-column: 1 / -1; color: var(--muted); margin: 0.3rem 0 0; font-size: 0.95rem; }
+.live-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.live-list time { display: block; color: var(--muted); font-size: 0.9rem; }
+.badge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(43, 176, 166, 0.2);
+  color: var(--accent);
+}
+
+.btn {
+  display: inline-block;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: transparent;
+  padding: 0.65rem 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+}
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #042a28;
+  font-weight: 600;
+}
+.btn.primary:hover { filter: brightness(1.05); text-decoration: none; }
+
+.card-form label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+.card-form input, .card-form select, .card-form textarea, .pix-box textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(0,0,0,0.25);
+  color: var(--ink);
+  font: inherit;
+  margin-bottom: 0.35rem;
+}
+.help, .muted { color: var(--muted); font-size: 0.85rem; }
+.form-errors, .errorlist { color: #ff8f8f; }
+.qr { width: 220px; height: 220px; background: #fff; border-radius: 8px; display: block; margin: 0 auto 1rem; }
+.pix-box { text-align: center; }
+.status-line { margin-top: 1rem; color: var(--accent2); }
+.stream-frame iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 0;
+  border-radius: 12px;
+  background: #000;
+}
+.alert { border-left: 3px solid var(--accent2); }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 640px) {
+  .hero { padding-top: 2.5rem; }
+  .course-list li { grid-template-columns: 1fr; }
+}

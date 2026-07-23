@@ -1,0 +1,56 @@
+{% extends "cliente/base.html" %}
+{% block title %}SIGNAU Cursos Live — Aulas online{% endblock %}
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">live.signau.cc</p>
+  <h1 class="brand-hero">SIGNAU Cursos</h1>
+  <p class="lead">Aulas ao vivo com OBS · pagamento via PIX · turma mínima de 10 alunos</p>
+  <div class="cta-row">
+    <a class="btn primary" href="{% url 'cliente:cadastro' %}">Quero me inscrever</a>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Cursos</h2>
+  <p class="section-sub">R$ 29,90 por live · se a turma não fechar com 10, o valor vira crédito para a próxima</p>
+  <ul class="course-list">
+    {% for c in cursos %}
+      <li>
+        <strong>{{ c.nome }}</strong>
+        <span>R$ {{ c.preco }}</span>
+        <p>{{ c.descricao }}</p>
+      </li>
+    {% empty %}
+      <li>Cursos em breve. Rode <code>python manage.py seed_cursos</code>.</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section">
+  <h2>Próximas lives</h2>
+  <p class="section-sub">{{ dias_live }}</p>
+  <ul class="live-list">
+    {% for live in lives %}
+      <li>
+        <div>
+          <strong>{{ live.titulo }}</strong>
+          <time>{{ live.data_hora|date:"D d/m/Y H:i" }}</time>
+          <span class="badge">{{ live.inscritos_pagos }}/{{ live.min_alunos }} pagos</span>
+        </div>
+        <a class="btn" href="{% url 'cliente:cadastro' %}?live={{ live.pk }}">Inscrever</a>
+      </li>
+    {% empty %}
+      <li>Nenhuma live aberta no momento.</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section form-section">
+  <h2>Cadastro rápido</h2>
+  <form method="post" action="{% url 'cliente:cadastro' %}" class="card-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn primary">Gerar PIX</button>
+  </form>
+</section>
+{% endblock %}
