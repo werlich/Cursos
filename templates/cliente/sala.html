@@ -26,6 +26,23 @@
     </div>
   {% endif %}
 
+  <div class="alert confirm-wa">
+    <p>Confirmação da inscrição enviada ao seu WhatsApp (quando a API estiver ativa).</p>
+    <a class="btn primary" href="{{ wa_confirm_url }}" target="_blank" rel="noopener" id="waConfirmBtn">
+      Abrir confirmação no WhatsApp
+    </a>
+  </div>
+
   <p class="muted">Acesso de {{ inscricao.cliente.nome }} · guarde este link da sala.</p>
 </section>
+<script>
+(function(){
+  var url = "{{ wa_confirm_url|escapejs }}";
+  var key = "wa_confirm_{{ inscricao.token_acesso }}";
+  if (url && !sessionStorage.getItem(key)) {
+    sessionStorage.setItem(key, "1");
+    window.open(url, "_blank", "noopener");
+  }
+})();
+</script>
 {% endblock %}

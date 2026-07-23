@@ -20,6 +20,10 @@ class Curso(models.Model):
     nome = models.CharField(max_length=80)
     descricao = models.TextField(blank=True)
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("29.90"))
+    min_alunos_padrao = models.PositiveSmallIntegerField(
+        default=5,
+        help_text="Mínimo de alunos pagos para fechar turma neste curso",
+    )
     ativo = models.BooleanField(default=True)
     ordem = models.PositiveSmallIntegerField(default=0)
 

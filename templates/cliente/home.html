@@ -1,34 +1,42 @@
 {% extends "cliente/base.html" %}
-{% block title %}SIGNAU Cursos Live — Aulas online{% endblock %}
+{% load static %}
+{% block title %}SIGNAU Cursos Live — Aulas náuticas online{% endblock %}
 {% block content %}
-<section class="hero">
-  <p class="eyebrow">live.signau.cc</p>
-  <h1 class="brand-hero">SIGNAU Cursos</h1>
-  <p class="lead">Aulas ao vivo com OBS · pagamento via PIX · turma mínima de 10 alunos</p>
-  <div class="cta-row">
-    <a class="btn primary" href="{% url 'cliente:cadastro' %}">Quero me inscrever</a>
+<section class="hero hero-full">
+  <div class="hero-copy">
+    <img class="hero-logo" src="{% static 'img/signau-logo.png' %}" alt="SIGNAU — Sistemas Integrados em Gestão Náutica" width="160" height="160">
+    <p class="eyebrow">live.signau.cc</p>
+    <h1 class="brand-hero">SIGNAU Cursos</h1>
+    <p class="lead">Aulas ao vivo com OBS, pagamento via PIX e turmas enxutas. Preparatório para Arrais-Amador, Motonauta e Mestre-Amador.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="{% url 'cliente:cadastro' %}">Quero me inscrever</a>
+      <a class="btn ghost" href="#cursos">Ver cursos</a>
+    </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="cursos">
   <h2>Cursos</h2>
-  <p class="section-sub">R$ 29,90 por live · se a turma não fechar com 10, o valor vira crédito para a próxima</p>
-  <ul class="course-list">
+  <p class="section-sub">Se a turma não fechar com o mínimo de alunos, o valor vira crédito para a próxima live.</p>
+  <ul class="course-grid">
     {% for c in cursos %}
-      <li>
+      <li class="course-card">
+        <p class="course-kicker">Live online</p>
         <strong>{{ c.nome }}</strong>
-        <span>R$ {{ c.preco }}</span>
+        <p class="course-price">R$ {{ c.preco }}</p>
+        <p class="course-meta">Mínimo {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</p>
         <p>{{ c.descricao }}</p>
+        <a class="btn" href="{% url 'cliente:cadastro' %}">Inscrever-se</a>
       </li>
     {% empty %}
-      <li>Cursos em breve. Rode <code>python manage.py seed_cursos</code>.</li>
+      <li>Cursos em breve.</li>
     {% endfor %}
   </ul>
 </section>
 
-<section class="section">
+<section class="section" id="lives">
   <h2>Próximas lives</h2>
-  <p class="section-sub">{{ dias_live }}</p>
+  <p class="section-sub">{{ dias_live }} · 19h</p>
   <ul class="live-list">
     {% for live in lives %}
       <li>
@@ -45,8 +53,22 @@
   </ul>
 </section>
 
-<section class="section form-section">
+<section class="section" id="depoimentos">
+  <h2>Depoimentos</h2>
+  <p class="section-sub">Quem já estudou com a SIGNAU</p>
+  <ul class="testimonial-grid">
+    {% for t in testimonials %}
+      <li class="testimonial-card">
+        <blockquote>“{{ t.texto }}”</blockquote>
+        <p class="testimonial-meta"><strong>{{ t.nome }}</strong> · {{ t.curso }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section form-section" id="cadastro">
   <h2>Cadastro rápido</h2>
+  <p class="section-sub">Nome, e-mail e WhatsApp. Em seguida você vai ao PIX.</p>
   <form method="post" action="{% url 'cliente:cadastro' %}" class="card-form">
     {% csrf_token %}
     {{ form.as_p }}

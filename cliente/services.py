@@ -76,6 +76,13 @@ def confirmar_pagamento(pagamento: Pagamento) -> None:
 
     avaliar_turma(insc.live)
 
+    try:
+        from .whatsapp import enviar_confirmacao_inscricao
+
+        enviar_confirmacao_inscricao(insc)
+    except Exception:
+        logger.exception("Falha ao enviar confirmação WhatsApp")
+
 
 @transaction.atomic
 def avaliar_turma(live: Live) -> None:

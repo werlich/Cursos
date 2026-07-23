@@ -6,6 +6,7 @@ app_name = "cliente"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("quem-sou/", views.quem_sou, name="quem_sou"),
     path("cadastro/", views.cadastro, name="cadastro"),
     path("pagamento/<str:token>/", views.pagamento, name="pagamento"),
     path(

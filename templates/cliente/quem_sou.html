@@ -1,0 +1,34 @@
+{% extends "cliente/base.html" %}
+{% load static %}
+{% block title %}Quem sou — SIGNAU Cursos{% endblock %}
+{% block content %}
+<section class="section quem-sou">
+  <img class="hero-logo sm" src="{% static 'img/signau-logo.png' %}" alt="SIGNAU" width="120" height="120">
+  <h1>Quem sou</h1>
+  <p class="section-sub">Currículo e trajetória — em elaboração.</p>
+
+  <article class="bio-card">
+    <h2>Sobre</h2>
+    <p>
+      Instrutor e desenvolvedor na SIGNAU — Sistemas Integrados em Gestão Náutica.
+      Atuo com formação náutica (Arrais-Amador, Motonauta e Mestre-Amador) e com
+      a plataforma de aulas ao vivo em <strong>live.signau.cc</strong>.
+    </p>
+    <p class="muted">
+      Este espaço receberá o currículo completo (formação, certificações Marinha/NORMAM,
+      experiência em sala e projetos). Enquanto isso, fale comigo pelo WhatsApp.
+    </p>
+    <a class="btn primary" href="{{ whatsapp_url }}" target="_blank" rel="noopener">Falar no WhatsApp</a>
+  </article>
+
+  <article class="bio-card">
+    <h2>Áreas de atuação</h2>
+    <ul class="bio-list">
+      <li>Preparatório Arrais-Amador (NORMAM-211)</li>
+      <li>Preparatório Motonauta (NORMAM-212)</li>
+      <li>Preparatório Mestre-Amador</li>
+      <li>Lives segundas, quartas e sextas</li>
+    </ul>
+  </article>
+</section>
+{% endblock %}

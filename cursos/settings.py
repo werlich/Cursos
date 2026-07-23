@@ -79,6 +79,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "cliente.context_processors.site_extras",
             ],
         },
     },
@@ -145,7 +146,14 @@ LIVEPIX_SCOPE = os.environ.get(
 )
 LIVEPIX_DEMO = os.environ.get("LIVEPIX_DEMO", "true").lower() in ("1", "true", "yes")
 
-MIN_ALUNOS_TURMA = int(os.environ.get("MIN_ALUNOS_TURMA", "10"))
+# WhatsApp
+WHATSAPP_SCHOOL_NUMBER = os.environ.get("WHATSAPP_SCHOOL_NUMBER", "47933835108")
+WHATSAPP_ACCESS_TOKEN = os.environ.get("WHATSAPP_ACCESS_TOKEN", "")
+WHATSAPP_PHONE_NUMBER_ID = os.environ.get("WHATSAPP_PHONE_NUMBER_ID", "")
+WHATSAPP_EVOLUTION_URL = os.environ.get("WHATSAPP_EVOLUTION_URL", "")
+WHATSAPP_EVOLUTION_KEY = os.environ.get("WHATSAPP_EVOLUTION_KEY", "")
+
+MIN_ALUNOS_TURMA = int(os.environ.get("MIN_ALUNOS_TURMA", "5"))
 PRECO_PADRAO = os.environ.get("PRECO_PADRAO", "29.90")
 
 JAZZMIN_SETTINGS = {

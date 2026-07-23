@@ -21,8 +21,27 @@ from .services import (
     criar_pagamento_pix,
     sincronizar_status_livepix,
 )
+from .whatsapp import aluno_wa_me_link, school_whatsapp_link
 
 logger = logging.getLogger(__name__)
+
+TESTIMONIALS = [
+    {
+        "nome": "Ana Paula",
+        "curso": "Arrais-Amador",
+        "texto": "A live foi objetiva e direta ao ponto. Passei no exame na primeira tentativa.",
+    },
+    {
+        "nome": "Ricardo M.",
+        "curso": "Motonauta",
+        "texto": "Didática excelente, com exemplos práticos de navegação. Recomendo demais.",
+    },
+    {
+        "nome": "Fernanda S.",
+        "curso": "Mestre-Amador",
+        "texto": "Conteúdo completo e suporte pelo WhatsApp. Valeu cada minuto da aula.",
+    },
+]
 
 
 def _lives_abertas():
@@ -52,6 +71,23 @@ def home(request: HttpRequest) -> HttpResponse:
             "lives": lives,
             "form": form,
             "dias_live": "Segundas, quartas e sextas",
+            "testimonials": TESTIMONIALS,
+            "whatsapp_url": school_whatsapp_link(
+                "Olá! Vim pelo site live.signau.cc e quero saber mais sobre as lives."
+            ),
+        },
+    )
+
+
+@require_GET
+def quem_sou(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "cliente/quem_sou.html",
+        {
+            "whatsapp_url": school_whatsapp_link(
+                "Olá! Vi a página Quem sou e gostaria de conversar."
+            ),
         },
     )
 
@@ -181,6 +217,8 @@ def sala(request: HttpRequest, token: str) -> HttpResponse:
             "faltam": live.vagas_restantes,
             "min_alunos": live.min_alunos,
             "inscritos": live.inscritos_pagos,
+            "wa_confirm_url": aluno_wa_me_link(insc),
+            "whatsapp_url": school_whatsapp_link(),
         },
     )
 
