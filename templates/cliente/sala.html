@@ -1,39 +1,37 @@
 {% extends "cliente/base.html" %}
 {% block title %}Sala ao vivo — {{ live.titulo }}{% endblock %}
 {% block content %}
-<section class="section">
-  <h1>{{ live.titulo }}</h1>
-  <p class="section-sub">
-    {{ live.curso.nome }} · {{ live.data_hora|date:"d/m/Y H:i" }} ·
-    Status: {{ live.get_status_display }} ·
-    {{ inscritos }}/{{ min_alunos }} pagos
-  </p>
+<section class="band page-top">
+  <div class="wrap narrow">
+    <header class="band-head">
+      <h1>{{ live.titulo }}</h1>
+      <p>
+        {{ live.curso.nome }} · {{ live.data_hora|date:"d/m/Y H:i" }} ·
+        {{ live.get_status_display }} · {{ inscritos }}/{{ min_alunos }} pagos
+      </p>
+    </header>
 
-  {% if live.status == "credito" %}
-    <div class="alert">
-      Esta turma não atingiu {{ min_alunos }} alunos. Seu pagamento foi convertido em
-      <strong>crédito</strong> para a próxima live. Entre em contato pelo WhatsApp se preferir estorno.
-    </div>
-  {% elif not stream_url %}
-    <div class="alert">
-      Pagamento confirmado. O link da transmissão OBS será publicado aqui antes do início.
-      {% if faltam %}Faltam {{ faltam }} inscrição(ões) paga(s) para fechar a turma.{% endif %}
-    </div>
-  {% else %}
-    <div class="stream-frame">
+    {% if live.status == "credito" %}
+      <div class="notice">
+        Esta turma não atingiu {{ min_alunos }} alunos. Seu pagamento foi convertido em
+        <strong>crédito</strong> para a próxima live.
+      </div>
+    {% elif not stream_url %}
+      <div class="notice">
+        Pagamento confirmado. O link da transmissão OBS será publicado aqui antes do início.
+        {% if faltam %} Faltam {{ faltam }} pagamento(s) para fechar a turma.{% endif %}
+      </div>
+    {% else %}
       <p><a class="btn primary" href="{{ stream_url }}" target="_blank" rel="noopener">Entrar na transmissão OBS</a></p>
-      <p class="help">Link publicado pelo instrutor (YouTube Live / player OBS).</p>
+    {% endif %}
+
+    <div class="notice">
+      <p>Confirmação da inscrição no WhatsApp:</p>
+      <a class="btn primary" href="{{ wa_confirm_url }}" target="_blank" rel="noopener">Abrir confirmação no WhatsApp</a>
     </div>
-  {% endif %}
 
-  <div class="alert confirm-wa">
-    <p>Confirmação da inscrição enviada ao seu WhatsApp (quando a API estiver ativa).</p>
-    <a class="btn primary" href="{{ wa_confirm_url }}" target="_blank" rel="noopener" id="waConfirmBtn">
-      Abrir confirmação no WhatsApp
-    </a>
+    <p class="muted">Acesso de {{ inscricao.cliente.nome }} · guarde este link da sala.</p>
   </div>
-
-  <p class="muted">Acesso de {{ inscricao.cliente.nome }} · guarde este link da sala.</p>
 </section>
 <script>
 (function(){

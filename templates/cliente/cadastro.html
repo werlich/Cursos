@@ -1,23 +1,27 @@
 {% extends "cliente/base.html" %}
 {% block title %}Cadastro — SIGNAU Cursos{% endblock %}
 {% block content %}
-<section class="section narrow">
-  <h1>Criar cadastro</h1>
-  <p class="section-sub">Nome, e-mail e WhatsApp. Em seguida você será direcionado ao QR Code PIX.</p>
-  <form method="post" class="card-form">
-    {% csrf_token %}
-    {% if form.non_field_errors %}
-      <div class="form-errors">{{ form.non_field_errors }}</div>
-    {% endif %}
-    {% for field in form %}
-      <p>
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% if field.help_text %}<span class="help">{{ field.help_text }}</span>{% endif %}
-        {{ field.errors }}
-      </p>
-    {% endfor %}
-    <button type="submit" class="btn primary">Continuar para pagamento</button>
-  </form>
+<section class="band page-top">
+  <div class="wrap narrow">
+    <header class="band-head">
+      <h1>Inscrição</h1>
+      <p>Nome, e-mail e WhatsApp. Em seguida você vai ao pagamento PIX.</p>
+    </header>
+    <form method="post" class="form-stack">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in form %}
+        <p>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<span class="help">{{ field.help_text }}</span>{% endif %}
+          {{ field.errors }}
+        </p>
+      {% endfor %}
+      <button type="submit" class="btn primary">Continuar para pagamento</button>
+    </form>
+  </div>
 </section>
 {% endblock %}

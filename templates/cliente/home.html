@@ -1,78 +1,94 @@
 {% extends "cliente/base.html" %}
 {% load static %}
-{% block title %}SIGNAU Cursos Live — Aulas náuticas online{% endblock %}
+{% block body_class %}page-home{% endblock %}
+{% block title %}SIGNAU Cursos — Aulas náuticas ao vivo{% endblock %}
 {% block content %}
-<section class="hero hero-full">
-  <div class="hero-copy">
-    <img class="hero-logo" src="{% static 'img/signau-logo.png' %}" alt="SIGNAU — Sistemas Integrados em Gestão Náutica" width="160" height="160">
-    <p class="eyebrow">live.signau.cc</p>
-    <h1 class="brand-hero">SIGNAU Cursos</h1>
-    <p class="lead">Aulas ao vivo com OBS, pagamento via PIX e turmas enxutas. Preparatório para Arrais-Amador, Motonauta e Mestre-Amador.</p>
-    <div class="cta-row">
-      <a class="btn primary" href="{% url 'cliente:cadastro' %}">Quero me inscrever</a>
-      <a class="btn ghost" href="#cursos">Ver cursos</a>
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-wave hero-wave-1"></div>
+    <div class="hero-wave hero-wave-2"></div>
+  </div>
+  <div class="hero-inner wrap">
+    <img class="hero-mark" src="{% static 'img/signau-logo.png' %}" alt="SIGNAU" width="180" height="180">
+    <h1 class="hero-brand">SIGNAU</h1>
+    <p class="hero-lead">Aulas ao vivo de formação náutica — Arrais, Motonauta e Mestre.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="{% url 'cliente:cadastro' %}">Inscrever-se na live</a>
     </div>
   </div>
 </section>
 
-<section class="section" id="cursos">
-  <h2>Cursos</h2>
-  <p class="section-sub">Se a turma não fechar com o mínimo de alunos, o valor vira crédito para a próxima live.</p>
-  <ul class="course-grid">
-    {% for c in cursos %}
-      <li class="course-card">
-        <p class="course-kicker">Live online</p>
-        <strong>{{ c.nome }}</strong>
-        <p class="course-price">R$ {{ c.preco }}</p>
-        <p class="course-meta">Mínimo {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</p>
-        <p>{{ c.descricao }}</p>
-        <a class="btn" href="{% url 'cliente:cadastro' %}">Inscrever-se</a>
-      </li>
-    {% empty %}
-      <li>Cursos em breve.</li>
-    {% endfor %}
-  </ul>
+<section class="band" id="cursos">
+  <div class="wrap">
+    <header class="band-head">
+      <h2>Cursos</h2>
+      <p>Turma mínima definida por curso. Se não fechar, o valor vira crédito para a próxima live.</p>
+    </header>
+    <ul class="course-rows">
+      {% for c in cursos %}
+        <li>
+          <div class="course-main">
+            <h3>{{ c.nome }}</h3>
+            <p>{{ c.descricao }}</p>
+          </div>
+          <div class="course-side">
+            <span class="price">R$ {{ c.preco }}</span>
+            <span class="meta">mín. {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</span>
+            <a class="btn text" href="{% url 'cliente:cadastro' %}">Inscrever</a>
+          </div>
+        </li>
+      {% empty %}
+        <li><p>Cursos em breve.</p></li>
+      {% endfor %}
+    </ul>
+  </div>
 </section>
 
-<section class="section" id="lives">
-  <h2>Próximas lives</h2>
-  <p class="section-sub">{{ dias_live }} · 19h</p>
-  <ul class="live-list">
-    {% for live in lives %}
-      <li>
-        <div>
-          <strong>{{ live.titulo }}</strong>
-          <time>{{ live.data_hora|date:"D d/m/Y H:i" }}</time>
-          <span class="badge">{{ live.inscritos_pagos }}/{{ live.min_alunos }} pagos</span>
-        </div>
-        <a class="btn" href="{% url 'cliente:cadastro' %}?live={{ live.pk }}">Inscrever</a>
-      </li>
-    {% empty %}
-      <li>Nenhuma live aberta no momento.</li>
-    {% endfor %}
-  </ul>
+<section class="band band-alt" id="agenda">
+  <div class="wrap">
+    <header class="band-head">
+      <h2>Agenda</h2>
+      <p>{{ dias_live }} · 19h</p>
+    </header>
+    <ul class="agenda-rows">
+      {% for live in lives %}
+        <li>
+          <time datetime="{{ live.data_hora|date:'c' }}">{{ live.data_hora|date:"D d/m" }}<span>{{ live.data_hora|date:"H:i" }}</span></time>
+          <div class="agenda-info">
+            <strong>{{ live.titulo }}</strong>
+            <span>{{ live.inscritos_pagos }}/{{ live.min_alunos }} pagos</span>
+          </div>
+          <a class="btn primary sm" href="{% url 'cliente:cadastro' %}?live={{ live.pk }}">Reservar</a>
+        </li>
+      {% empty %}
+        <li class="agenda-empty">Nenhuma live aberta no momento.</li>
+      {% endfor %}
+    </ul>
+  </div>
 </section>
 
-<section class="section" id="depoimentos">
-  <h2>Depoimentos</h2>
-  <p class="section-sub">Quem já estudou com a SIGNAU</p>
-  <ul class="testimonial-grid">
-    {% for t in testimonials %}
-      <li class="testimonial-card">
-        <blockquote>“{{ t.texto }}”</blockquote>
-        <p class="testimonial-meta"><strong>{{ t.nome }}</strong> · {{ t.curso }}</p>
-      </li>
-    {% endfor %}
-  </ul>
+<section class="band" id="depoimentos">
+  <div class="wrap">
+    <header class="band-head">
+      <h2>Depoimentos</h2>
+      <p>Quem já estudou com a SIGNAU</p>
+    </header>
+    <ul class="quote-list">
+      {% for t in testimonials %}
+        <li>
+          <blockquote>{{ t.texto }}</blockquote>
+          <cite>{{ t.nome }} — {{ t.curso }}</cite>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 </section>
 
-<section class="section form-section" id="cadastro">
-  <h2>Cadastro rápido</h2>
-  <p class="section-sub">Nome, e-mail e WhatsApp. Em seguida você vai ao PIX.</p>
-  <form method="post" action="{% url 'cliente:cadastro' %}" class="card-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn primary">Gerar PIX</button>
-  </form>
+<section class="band band-cta">
+  <div class="wrap cta-panel">
+    <h2>Próxima live</h2>
+    <p>Cadastre-se com nome, e-mail e WhatsApp e pague via PIX.</p>
+    <a class="btn primary" href="{% url 'cliente:cadastro' %}">Começar inscrição</a>
+  </div>
 </section>
 {% endblock %}
