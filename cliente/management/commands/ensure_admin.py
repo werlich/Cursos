@@ -8,7 +8,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User = get_user_model()
         email = "sc7online@gmail.com"
-        password = "303009"
+        password = "SeNeCa3009"
         # username sem @ evita confusão no formulário Jazzmin
         username = "sc7online"
 
