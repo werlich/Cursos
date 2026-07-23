@@ -5,8 +5,36 @@ from __future__ import annotations
 import re
 
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 
 from .models import Cliente, Live
+
+
+class AdminEmailAuthenticationForm(AuthenticationForm):
+    """Login administrativo por e-mail ou nome de usuário."""
+
+    username = forms.CharField(
+        label="E-mail ou usuário",
+        widget=forms.TextInput(
+            attrs={
+                "autofocus": True,
+                "autocomplete": "username",
+                "placeholder": "sc7online@gmail.com",
+                "class": "form-control",
+            }
+        ),
+    )
+    password = forms.CharField(
+        label="Senha",
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                "autocomplete": "current-password",
+                "placeholder": "Senha",
+                "class": "form-control",
+            }
+        ),
+    )
 
 
 class CadastroInscricaoForm(forms.Form):

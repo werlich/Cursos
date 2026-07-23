@@ -3,6 +3,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from cliente.forms import AdminEmailAuthenticationForm
+
+admin.site.login_form = AdminEmailAuthenticationForm
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("cliente.urls")),
