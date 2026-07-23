@@ -7,15 +7,17 @@
   <title>{% block title %}SIGNAU Cursos Live{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/cursos.css' %}">
   <link rel="icon" href="{% static 'img/signau-logo.png' %}">
 </head>
 <body class="{% block body_class %}{% endblock %}">
   <header class="site-header">
     <a class="brand" href="{% url 'cliente:home' %}">
-      <img class="brand-logo" src="{% static 'img/signau-logo.png' %}" alt="SIGNAU" width="40" height="40">
-      <span class="brand-text">SIGNAU</span>
+      <span class="brand-logo-wrap">
+        <img class="brand-logo" src="{% static 'img/signau-logo.png' %}" alt="" width="36" height="36">
+      </span>
+      <span class="brand-text">SIGNAU <span>Cursos</span></span>
     </a>
     <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" id="navToggle">
       <span></span><span></span>
@@ -42,9 +44,11 @@
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div class="footer-brand">
-        <img class="brand-logo" src="{% static 'img/signau-logo.png' %}" alt="" width="44" height="44">
+        <span class="brand-logo-wrap">
+          <img class="brand-logo" src="{% static 'img/signau-logo.png' %}" alt="" width="40" height="40">
+        </span>
         <div>
-          <strong>SIGNAU</strong>
+          <strong>SIGNAU Cursos</strong>
           <p>Sistemas Integrados em Gestão Náutica</p>
         </div>
       </div>

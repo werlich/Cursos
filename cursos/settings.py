@@ -131,7 +131,17 @@ LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/admin/"
 LOGOUT_REDIRECT_URL = "/"
 
+AUTHENTICATION_BACKENDS = [
+    "cliente.auth_backends.EmailOrUsernameBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SAMESITE = "Lax"
 
 SITE_URL = os.environ.get("SITE_URL", "https://live.signau.cc").rstrip("/")
 
@@ -160,12 +170,14 @@ JAZZMIN_SETTINGS = {
     "site_title": "SIGNAU Cursos",
     "site_header": "SIGNAU Cursos Live",
     "site_brand": "SIGNAU Cursos",
-    "welcome_sign": "Gestão de lives e inscritos",
+    "site_logo": "img/signau-logo.png",
+    "login_logo": "img/signau-logo.png",
+    "site_logo_classes": "img-circle",
+    "welcome_sign": "Entre com seu e-mail e senha",
     "copyright": "SIGNAU — Sistemas Integrados em Gestão Náutica",
     "search_model": ["cliente.Cliente", "cliente.Inscricao"],
     "topmenu_links": [
         {"name": "Site", "url": "/", "new_window": True},
-        {"name": "Admin", "url": "admin:index"},
     ],
     "order_with_respect_to": [
         "cliente.Curso",
@@ -187,6 +199,8 @@ JAZZMIN_SETTINGS = {
 
 JAZZMIN_UI_TWEAKS = {
     "theme": "flatly",
-    "navbar": "navbar-dark",
+    "navbar": "navbar-white navbar-light",
+    "navbar_fixed": True,
     "accent": "accent-primary",
+    "sidebar": "sidebar-dark-primary",
 }
