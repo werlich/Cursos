@@ -511,6 +511,26 @@ a:hover { text-decoration: underline; }
   }
   body.nav-open { overflow: hidden; }
 
+  /* Evita faixa vazia sob o hero no celular */
+  .hero {
+    min-height: 0;
+    align-content: center;
+  }
+  .hero-inner {
+    padding: calc(var(--header-h) + 1.1rem) 0 2.75rem;
+  }
+  .hero-badge {
+    width: min(148px, 42vw);
+    height: min(148px, 42vw);
+    margin-bottom: 1rem;
+  }
+  .hero-kicker { font-size: clamp(1.75rem, 9vw, 2.4rem); }
+  .hero-lead { font-size: 1rem; margin-top: 0.65rem; }
+  .hero-cta { margin-top: 1.2rem; }
+  .hero-shore { height: 56px; }
+  .band { padding: 2.4rem 0; }
+  .band-end { padding: 2.4rem 0; }
+
   .course-rows > li {
     grid-template-columns: 1fr;
     gap: 0.8rem;
