@@ -175,6 +175,7 @@ JAZZMIN_SETTINGS = {
     "site_logo_classes": "img-circle",
     "welcome_sign": "Entre com seu e-mail e senha",
     "copyright": "SIGNAU — Sistemas Integrados em Gestão Náutica",
+    "custom_css": "css/admin-jazzmin.css",
     "search_model": ["cliente.Cliente", "cliente.Inscricao"],
     "topmenu_links": [
         {"name": "Site", "url": "/", "new_window": True},
