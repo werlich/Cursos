@@ -212,3 +212,34 @@ class Credito(models.Model):
 
 def preco_padrao() -> Decimal:
     return Decimal(str(getattr(settings, "PRECO_PADRAO", "29.90")))
+
+
+class Depoimento(models.Model):
+    class Status(models.TextChoices):
+        PENDENTE = "pendente", "Aguardando análise"
+        APROVADO = "aprovado", "Aprovado (publicado)"
+        REJEITADO = "rejeitado", "Rejeitado"
+
+    nome = models.CharField(max_length=80)
+    curso = models.CharField(max_length=80, help_text="Ex.: Arrais-Amador, Motonauta…")
+    texto = models.TextField(max_length=600)
+    nota = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Nota de 1 a 5 (opcional)",
+    )
+    email = models.EmailField(blank=True)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.PENDENTE, db_index=True
+    )
+    criado_em = models.DateTimeField(auto_now_add=True)
+    revisado_em = models.DateTimeField(null=True, blank=True)
+    observacao_interna = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ["-criado_em"]
+        verbose_name = "Depoimento"
+        verbose_name_plural = "Depoimentos"
+
+    def __str__(self) -> str:
+        return f"{self.nome} — {self.get_status_display()}"

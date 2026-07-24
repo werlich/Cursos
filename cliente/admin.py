@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from django.contrib import admin, messages
+from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import Cliente, Credito, Curso, Inscricao, Live, Pagamento
+from .models import Cliente, Credito, Curso, Depoimento, Inscricao, Live, Pagamento
 from .services import emitir_creditos_se_nao_atingiu, estornar_pagamento
 
 
@@ -140,3 +141,44 @@ class CreditoAdmin(admin.ModelAdmin):
     list_display = ("cliente", "valor", "ativo", "origem", "usado_em", "criado_em")
     list_filter = ("ativo",)
     search_fields = ("cliente__nome", "cliente__email")
+
+
+@admin.register(Depoimento)
+class DepoimentoAdmin(admin.ModelAdmin):
+    list_display = ("nome", "curso", "nota", "status", "preview", "criado_em")
+    list_filter = ("status", "curso")
+    search_fields = ("nome", "curso", "texto", "email")
+    list_editable = ("status",)
+    readonly_fields = ("criado_em", "revisado_em")
+    actions = ["action_aprovar", "action_rejeitar"]
+    fields = (
+        "nome",
+        "curso",
+        "nota",
+        "texto",
+        "email",
+        "status",
+        "observacao_interna",
+        "criado_em",
+        "revisado_em",
+    )
+
+    @admin.display(description="Texto")
+    def preview(self, obj: Depoimento) -> str:
+        t = obj.texto or ""
+        return (t[:72] + "…") if len(t) > 72 else t
+
+    def save_model(self, request, obj, form, change):
+        if change and "status" in form.changed_data:
+            obj.revisado_em = timezone.now()
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description="Aprovar e publicar")
+    def action_aprovar(self, request, queryset):
+        n = queryset.update(status=Depoimento.Status.APROVADO, revisado_em=timezone.now())
+        self.message_user(request, f"{n} depoimento(s) aprovado(s).", messages.SUCCESS)
+
+    @admin.action(description="Rejeitar")
+    def action_rejeitar(self, request, queryset):
+        n = queryset.update(status=Depoimento.Status.REJEITADO, revisado_em=timezone.now())
+        self.message_user(request, f"{n} depoimento(s) rejeitado(s).", messages.WARNING)

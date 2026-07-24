@@ -336,6 +336,67 @@ a:hover { text-decoration: underline; }
   font-size: 0.92rem;
 }
 
+.review-cta {
+  margin-top: 2.4rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+}
+.review-cta-copy {
+  max-width: 28rem;
+}
+.review-cta-copy h3 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.3rem, 2.8vw, 1.7rem);
+  letter-spacing: -0.03em;
+  color: var(--navy);
+  font-weight: 700;
+}
+.review-cta-copy > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+.review-cta-link {
+  margin-top: 0.85rem !important;
+}
+.review-cta-link a {
+  font-weight: 600;
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.review-qr {
+  margin: 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+.review-qr img {
+  display: block;
+  width: 168px;
+  height: 168px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.55rem;
+}
+.review-qr figcaption {
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.notice.ok {
+  border-color: rgba(37, 211, 102, 0.35);
+  background: rgba(37, 211, 102, 0.08);
+}
+.notice.ok p { margin: 0.45rem 0 0; color: var(--muted); }
+
 .cta-panel { text-align: center; max-width: 30rem; }
 .cta-panel h2 {
   margin: 0 0 0.45rem;

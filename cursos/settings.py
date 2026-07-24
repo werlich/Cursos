@@ -187,6 +187,7 @@ JAZZMIN_SETTINGS = {
         "cliente.Inscricao",
         "cliente.Pagamento",
         "cliente.Credito",
+        "cliente.Depoimento",
     ],
     "icons": {
         "cliente.Curso": "fas fa-graduation-cap",
@@ -195,6 +196,7 @@ JAZZMIN_SETTINGS = {
         "cliente.Inscricao": "fas fa-clipboard-list",
         "cliente.Pagamento": "fas fa-qrcode",
         "cliente.Credito": "fas fa-wallet",
+        "cliente.Depoimento": "fas fa-comment-dots",
     },
 }
 

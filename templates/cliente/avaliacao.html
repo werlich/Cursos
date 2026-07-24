@@ -1,0 +1,42 @@
+{% extends "cliente/base.html" %}
+{% block title %}Avaliação — SIGNAU Cursos{% endblock %}
+{% block content %}
+<section class="band page-top">
+  <div class="wrap narrow">
+    <header class="band-head">
+      <p class="eyebrow">Feedback</p>
+      <h1>Envie sua avaliação</h1>
+      <p>Seu depoimento passa por análise antes de aparecer no site.</p>
+    </header>
+
+    {% if enviado %}
+      <div class="notice ok">
+        <strong>Obrigado!</strong>
+        <p>Recebemos sua avaliação. Assim que for analisada e aprovada, ela poderá ser publicada em Depoimentos.</p>
+        <p><a class="btn ghost" href="{% url 'cliente:home' %}#depoimentos">Voltar ao site</a></p>
+      </div>
+    {% endif %}
+
+    <form method="post" class="form-stack">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in form %}
+        <p>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<span class="help">{{ field.help_text }}</span>{% endif %}
+          {{ field.errors }}
+        </p>
+      {% endfor %}
+      <datalist id="cursos-sugeridos">
+        {% for nome in curso_suggestions %}
+          <option value="{{ nome }}"></option>
+        {% endfor %}
+      </datalist>
+      <button type="submit" class="btn primary">Enviar para análise</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

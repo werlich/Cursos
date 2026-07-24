@@ -4,3 +4,4 @@ requests>=2.31
 python-dotenv>=1.0
 gunicorn>=22.0
 mysqlclient>=2.2
+qrcode>=7.4

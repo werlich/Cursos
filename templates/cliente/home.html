@@ -94,10 +94,25 @@
       {% for t in testimonials %}
         <li>
           <blockquote>{{ t.texto }}</blockquote>
-          <cite>{{ t.nome }} — {{ t.curso }}</cite>
+          <cite>{{ t.nome }} — {{ t.curso }}{% if t.nota %} · {{ t.nota }}★{% endif %}</cite>
         </li>
       {% endfor %}
     </ul>
+
+    <aside class="review-cta" aria-label="Enviar avaliação">
+      <div class="review-cta-copy">
+        <p class="eyebrow">Sua vez</p>
+        <h3>Avalie sua aula</h3>
+        <p>Escaneie o QR Code ou abra o link. O depoimento só é publicado após nossa análise.</p>
+        <p class="review-cta-link">
+          <a href="{% url 'cliente:avaliacao' %}">Enviar avaliação online →</a>
+        </p>
+      </div>
+      <figure class="review-qr">
+        <img src="{{ avaliacao_qr }}" alt="QR Code para enviar avaliação" width="168" height="168">
+        <figcaption>Aponte a câmera</figcaption>
+      </figure>
+    </aside>
   </div>
 </section>
 

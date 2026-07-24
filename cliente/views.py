@@ -12,8 +12,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from .forms import CadastroInscricaoForm
-from .models import Curso, Inscricao, Live, Pagamento
+from django.urls import reverse
+
+from .forms import CadastroInscricaoForm, DepoimentoForm
+from .models import Curso, Depoimento, Inscricao, Live, Pagamento
+from .qrcode_utils import qr_data_uri
 from .services import (
     aplicar_credito,
     buscar_pagamento_livepix,
@@ -25,7 +28,7 @@ from .whatsapp import aluno_wa_me_link, school_whatsapp_link
 
 logger = logging.getLogger(__name__)
 
-TESTIMONIALS = [
+FALLBACK_TESTIMONIALS = [
     {
         "nome": "Ana Paula",
         "curso": "Arrais-Amador",
@@ -63,6 +66,15 @@ def home(request: HttpRequest) -> HttpResponse:
     cursos = Curso.objects.filter(ativo=True)
     lives = _lives_abertas()
     form = CadastroInscricaoForm(lives_qs=lives)
+    aprovados = list(
+        Depoimento.objects.filter(status=Depoimento.Status.APROVADO).order_by("-revisado_em", "-criado_em")[:12]
+    )
+    testimonials = (
+        [{"nome": d.nome, "curso": d.curso, "texto": d.texto, "nota": d.nota} for d in aprovados]
+        if aprovados
+        else FALLBACK_TESTIMONIALS
+    )
+    avaliacao_url = request.build_absolute_uri(reverse("cliente:avaliacao"))
     return render(
         request,
         "cliente/home.html",
@@ -71,10 +83,34 @@ def home(request: HttpRequest) -> HttpResponse:
             "lives": lives,
             "form": form,
             "dias_live": "Segundas, quartas e sextas",
-            "testimonials": TESTIMONIALS,
+            "testimonials": testimonials,
+            "avaliacao_url": avaliacao_url,
+            "avaliacao_qr": qr_data_uri(avaliacao_url),
             "whatsapp_url": school_whatsapp_link(
                 "Olá! Vim pelo site live.signau.cc e quero saber mais sobre as lives."
             ),
+        },
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def avaliacao(request: HttpRequest) -> HttpResponse:
+    enviado = False
+    if request.method == "POST":
+        form = DepoimentoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            enviado = True
+            form = DepoimentoForm()
+    else:
+        form = DepoimentoForm()
+    return render(
+        request,
+        "cliente/avaliacao.html",
+        {
+            "form": form,
+            "enviado": enviado,
+            "curso_suggestions": getattr(form, "curso_suggestions", []),
         },
     )
 
