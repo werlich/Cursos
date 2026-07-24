@@ -45,6 +45,18 @@
         <li><p>Cursos em breve.</p></li>
       {% endfor %}
     </ul>
+
+    <aside class="personal-cta" aria-label="Aula personalizada">
+      <div class="personal-cta-copy">
+        <p class="eyebrow">Sob medida</p>
+        <h3>Quer uma aula personalizada?</h3>
+        <p>Com flexibilidade de horários? Clique no botão WhatsApp e consulte a disponibilidade.</p>
+      </div>
+      <a class="btn wa"
+         href="{{ whatsapp_url }}?text={{ 'Olá! Gostaria de uma aula personalizada com flexibilidade de horários. Podem me informar a disponibilidade?'|urlencode }}"
+         target="_blank"
+         rel="noopener">WhatsApp</a>
+    </aside>
   </div>
 </section>
 

@@ -370,6 +370,42 @@ a:hover { text-decoration: underline; }
 }
 .btn.ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
 .btn.sm { padding: 0.5rem 0.95rem; font-size: 0.9rem; }
+.btn.wa {
+  background: var(--wa);
+  color: #062b16;
+}
+.btn.wa:hover { background: #3be07a; color: #062b16; }
+
+.personal-cta {
+  margin-top: 2.4rem;
+  padding: 1.6rem 0 0.2rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.2rem 1.5rem;
+}
+.personal-cta-copy {
+  max-width: 36rem;
+}
+.personal-cta-copy h3 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  letter-spacing: -0.03em;
+  color: var(--navy);
+  font-weight: 700;
+}
+.personal-cta-copy p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+.personal-cta .btn.wa {
+  flex-shrink: 0;
+  padding: 0.85rem 1.4rem;
+  font-size: 1.02rem;
+}
 
 .form-stack label {
   display: block;
