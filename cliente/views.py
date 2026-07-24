@@ -33,16 +33,19 @@ FALLBACK_TESTIMONIALS = [
         "nome": "Ana Paula",
         "curso": "Arrais-Amador",
         "texto": "A live foi objetiva e direta ao ponto. Passei no exame na primeira tentativa.",
+        "nota": 5,
     },
     {
         "nome": "Ricardo M.",
         "curso": "Motonauta",
         "texto": "Didática excelente, com exemplos práticos de navegação. Recomendo demais.",
+        "nota": 5,
     },
     {
         "nome": "Fernanda S.",
         "curso": "Mestre-Amador",
         "texto": "Conteúdo completo e suporte pelo WhatsApp. Valeu cada minuto da aula.",
+        "nota": 5,
     },
 ]
 

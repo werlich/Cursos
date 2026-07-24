@@ -93,8 +93,15 @@
     <ul class="quote-list">
       {% for t in testimonials %}
         <li>
+          {% if t.nota %}
+            <p class="stars" aria-label="Nota {{ t.nota }} de 5">
+              {% for i in "12345" %}
+                <span class="{% if forloop.counter <= t.nota %}on{% else %}off{% endif %}" aria-hidden="true">★</span>
+              {% endfor %}
+            </p>
+          {% endif %}
           <blockquote>{{ t.texto }}</blockquote>
-          <cite>{{ t.nome }} — {{ t.curso }}{% if t.nota %} · {{ t.nota }}★{% endif %}</cite>
+          <cite>{{ t.nome }} — {{ t.curso }}</cite>
         </li>
       {% endfor %}
     </ul>
