@@ -16,7 +16,7 @@ class Curso(models.Model):
         MESTRE = "mestre", "Mestre-Amador"
         CAPITAO = "capitao", "Capitão-Amador"
 
-    tipo = models.CharField(max_length=20, choices=Tipo.choices, unique=True)
+    tipo = models.CharField(max_length=20, choices=Tipo.choices)
     nome = models.CharField(max_length=80)
     descricao = models.TextField(blank=True)
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("29.90"))
