@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/cursos.css' %}?v=20260724-11">
+  <link rel="stylesheet" href="{% static 'css/cursos.css' %}?v=20260724-12">
   <link rel="icon" href="{% static 'img/signau-logo.png' %}?v=20260724-5">
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -42,6 +42,30 @@
   {% block content %}{% endblock %}
 
   <footer class="site-footer">
+    <div class="wrap partners">
+      <header class="partners-head">
+        <p class="eyebrow">Rede</p>
+        <h2>Parceiros</h2>
+      </header>
+      <div class="partners-carousel" data-partners-carousel>
+        <button type="button" class="partners-nav prev" aria-label="Parceiro anterior">‹</button>
+        <div class="partners-viewport">
+          <ul class="partners-track">
+            <li class="partners-slide is-active">
+              <img src="{% static 'img/parceiros/bravo-zulu.jpg' %}" alt="Bravo Zulu — Escola Náutica e Despachante" width="160" height="160" loading="lazy">
+            </li>
+            <li class="partners-slide">
+              <img src="{% static 'img/parceiros/brnautica.jpg' %}" alt="brnautica" width="160" height="160" loading="lazy">
+            </li>
+            <li class="partners-slide">
+              <img src="{% static 'img/parceiros/ilhamar.jpg' %}" alt="ILHAMAR — Escola Náutica e Despachante" width="160" height="160" loading="lazy">
+            </li>
+          </ul>
+        </div>
+        <button type="button" class="partners-nav next" aria-label="Próximo parceiro">›</button>
+        <div class="partners-dots" role="tablist" aria-label="Selecionar parceiro"></div>
+      </div>
+    </div>
     <div class="wrap footer-grid">
       <div class="footer-brand">
         <span class="brand-logo-wrap">
@@ -71,6 +95,40 @@
         document.body.classList.toggle('nav-open', open);
       });
     }
+
+    var root = document.querySelector('[data-partners-carousel]');
+    if (!root) return;
+    var slides = Array.prototype.slice.call(root.querySelectorAll('.partners-slide'));
+    var dotsBox = root.querySelector('.partners-dots');
+    var prev = root.querySelector('.partners-nav.prev');
+    var next = root.querySelector('.partners-nav.next');
+    var i = 0;
+    var timer;
+
+    slides.forEach(function(_, idx){
+      var d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'partners-dot' + (idx === 0 ? ' is-active' : '');
+      d.setAttribute('aria-label', 'Parceiro ' + (idx + 1));
+      d.addEventListener('click', function(){ go(idx); restart(); });
+      dotsBox.appendChild(d);
+    });
+    var dots = Array.prototype.slice.call(dotsBox.querySelectorAll('.partners-dot'));
+
+    function go(n){
+      i = (n + slides.length) % slides.length;
+      slides.forEach(function(s, idx){ s.classList.toggle('is-active', idx === i); });
+      dots.forEach(function(d, idx){ d.classList.toggle('is-active', idx === i); });
+    }
+    function restart(){
+      clearInterval(timer);
+      timer = setInterval(function(){ go(i + 1); }, 3500);
+    }
+    if (prev) prev.addEventListener('click', function(){ go(i - 1); restart(); });
+    if (next) next.addEventListener('click', function(){ go(i + 1); restart(); });
+    root.addEventListener('mouseenter', function(){ clearInterval(timer); });
+    root.addEventListener('mouseleave', restart);
+    restart();
   })();
   </script>
 </body>
