@@ -118,7 +118,10 @@
             </p>
           {% endif %}
           <blockquote>{{ t.texto }}</blockquote>
-          <cite>{{ t.nome }} — {{ t.curso }}</cite>
+          <cite>
+            {{ t.nome }}{% if t.localidade %} · {{ t.localidade }}{% endif %}
+            — {{ t.curso }}
+          </cite>
         </li>
       {% endfor %}
     </ul>

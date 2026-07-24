@@ -220,7 +220,38 @@ class Depoimento(models.Model):
         APROVADO = "aprovado", "Aprovado (publicado)"
         REJEITADO = "rejeitado", "Rejeitado"
 
+    class UF(models.TextChoices):
+        AC = "AC", "AC"
+        AL = "AL", "AL"
+        AP = "AP", "AP"
+        AM = "AM", "AM"
+        BA = "BA", "BA"
+        CE = "CE", "CE"
+        DF = "DF", "DF"
+        ES = "ES", "ES"
+        GO = "GO", "GO"
+        MA = "MA", "MA"
+        MT = "MT", "MT"
+        MS = "MS", "MS"
+        MG = "MG", "MG"
+        PA = "PA", "PA"
+        PB = "PB", "PB"
+        PR = "PR", "PR"
+        PE = "PE", "PE"
+        PI = "PI", "PI"
+        RJ = "RJ", "RJ"
+        RN = "RN", "RN"
+        RS = "RS", "RS"
+        RO = "RO", "RO"
+        RR = "RR", "RR"
+        SC = "SC", "SC"
+        SP = "SP", "SP"
+        SE = "SE", "SE"
+        TO = "TO", "TO"
+
     nome = models.CharField(max_length=80)
+    cidade = models.CharField(max_length=80, blank=True)
+    estado = models.CharField(max_length=2, choices=UF.choices, blank=True)
     curso = models.CharField(max_length=80, help_text="Ex.: Arrais-Amador, Motonauta…")
     texto = models.TextField(max_length=600)
     nota = models.PositiveSmallIntegerField(
@@ -243,3 +274,11 @@ class Depoimento(models.Model):
 
     def __str__(self) -> str:
         return f"{self.nome} — {self.get_status_display()}"
+
+    @property
+    def localidade(self) -> str:
+        cidade = (self.cidade or "").strip()
+        estado = (self.estado or "").strip().upper()
+        if cidade and estado:
+            return f"{cidade}/{estado}"
+        return cidade or estado

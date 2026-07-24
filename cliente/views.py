@@ -34,18 +34,27 @@ FALLBACK_TESTIMONIALS = [
         "curso": "Arrais-Amador",
         "texto": "A live foi objetiva e direta ao ponto. Passei no exame na primeira tentativa.",
         "nota": 5,
+        "cidade": "Florianópolis",
+        "estado": "SC",
+        "localidade": "Florianópolis/SC",
     },
     {
         "nome": "Ricardo M.",
         "curso": "Motonauta",
         "texto": "Didática excelente, com exemplos práticos de navegação. Recomendo demais.",
         "nota": 5,
+        "cidade": "Itajaí",
+        "estado": "SC",
+        "localidade": "Itajaí/SC",
     },
     {
         "nome": "Fernanda S.",
         "curso": "Mestre-Amador",
         "texto": "Conteúdo completo e suporte pelo WhatsApp. Valeu cada minuto da aula.",
         "nota": 5,
+        "cidade": "Joinville",
+        "estado": "SC",
+        "localidade": "Joinville/SC",
     },
 ]
 
@@ -74,7 +83,18 @@ def home(request: HttpRequest) -> HttpResponse:
         Depoimento.objects.filter(status=Depoimento.Status.APROVADO).order_by("-revisado_em", "-criado_em")[:12]
     )
     testimonials = (
-        [{"nome": d.nome, "curso": d.curso, "texto": d.texto, "nota": d.nota} for d in aprovados]
+        [
+            {
+                "nome": d.nome,
+                "curso": d.curso,
+                "texto": d.texto,
+                "nota": d.nota,
+                "cidade": d.cidade,
+                "estado": d.estado,
+                "localidade": d.localidade,
+            }
+            for d in aprovados
+        ]
         if aprovados
         else FALLBACK_TESTIMONIALS
     )

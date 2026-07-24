@@ -99,11 +99,15 @@ class CadastroInscricaoForm(forms.Form):
 class DepoimentoForm(forms.ModelForm):
     class Meta:
         model = Depoimento
-        fields = ("nome", "curso", "nota", "texto", "email")
+        fields = ("nome", "cidade", "estado", "curso", "nota", "texto", "email")
         widgets = {
             "nome": forms.TextInput(
                 attrs={"placeholder": "Seu nome", "autocomplete": "name"}
             ),
+            "cidade": forms.TextInput(
+                attrs={"placeholder": "Sua cidade", "autocomplete": "address-level2"}
+            ),
+            "estado": forms.Select(attrs={"autocomplete": "address-level1"}),
             "curso": forms.TextInput(
                 attrs={"placeholder": "Ex.: Arrais-Amador", "list": "cursos-sugeridos"}
             ),
@@ -126,6 +130,8 @@ class DepoimentoForm(forms.ModelForm):
         }
         labels = {
             "nome": "Nome",
+            "cidade": "Cidade",
+            "estado": "Estado",
             "curso": "Curso / aula",
             "nota": "Nota",
             "texto": "Seu depoimento",
@@ -140,12 +146,27 @@ class DepoimentoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["nota"].required = False
         self.fields["email"].required = False
+        self.fields["cidade"].required = True
+        self.fields["estado"].required = True
+        self.fields["estado"].choices = [("", "UF")] + list(Depoimento.UF.choices)
         self.curso_suggestions = list(
             Curso.objects.filter(ativo=True).order_by("ordem").values_list("nome", flat=True)
         )
 
     def clean_nome(self) -> str:
         return self.cleaned_data["nome"].strip()
+
+    def clean_cidade(self) -> str:
+        cidade = self.cleaned_data["cidade"].strip()
+        if len(cidade) < 2:
+            raise forms.ValidationError("Informe a cidade.")
+        return cidade
+
+    def clean_estado(self) -> str:
+        estado = (self.cleaned_data.get("estado") or "").strip().upper()
+        if not estado:
+            raise forms.ValidationError("Selecione o estado.")
+        return estado
 
     def clean_curso(self) -> str:
         return self.cleaned_data["curso"].strip()

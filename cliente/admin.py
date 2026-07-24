@@ -145,14 +145,16 @@ class CreditoAdmin(admin.ModelAdmin):
 
 @admin.register(Depoimento)
 class DepoimentoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "curso", "nota", "status", "preview", "criado_em")
-    list_filter = ("status", "curso")
-    search_fields = ("nome", "curso", "texto", "email")
+    list_display = ("nome", "localidade_display", "curso", "nota", "status", "preview", "criado_em")
+    list_filter = ("status", "estado", "curso")
+    search_fields = ("nome", "cidade", "estado", "curso", "texto", "email")
     list_editable = ("status",)
     readonly_fields = ("criado_em", "revisado_em")
     actions = ["action_aprovar", "action_rejeitar"]
     fields = (
         "nome",
+        "cidade",
+        "estado",
         "curso",
         "nota",
         "texto",
@@ -162,6 +164,10 @@ class DepoimentoAdmin(admin.ModelAdmin):
         "criado_em",
         "revisado_em",
     )
+
+    @admin.display(description="Cidade/UF")
+    def localidade_display(self, obj: Depoimento) -> str:
+        return obj.localidade or "—"
 
     @admin.display(description="Texto")
     def preview(self, obj: Depoimento) -> str:
