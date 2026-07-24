@@ -69,6 +69,7 @@ def home(request: HttpRequest) -> HttpResponse:
     cursos = Curso.objects.filter(ativo=True)
     lives = _lives_abertas()
     form = CadastroInscricaoForm(lives_qs=lives)
+    agenda_page = Paginator(lives, 5).get_page(request.GET.get("page") or 1)
     aprovados = list(
         Depoimento.objects.filter(status=Depoimento.Status.APROVADO).order_by("-revisado_em", "-criado_em")[:12]
     )
@@ -83,7 +84,8 @@ def home(request: HttpRequest) -> HttpResponse:
         "cliente/home.html",
         {
             "cursos": cursos,
-            "lives": lives,
+            "lives": agenda_page,
+            "agenda_page": agenda_page,
             "form": form,
             "dias_live": "Segundas, quartas e sextas",
             "testimonials": testimonials,

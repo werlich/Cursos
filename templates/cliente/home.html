@@ -81,6 +81,23 @@
         <li class="agenda-empty">Nenhuma live aberta no momento.</li>
       {% endfor %}
     </ul>
+    {% if agenda_page.paginator.num_pages > 1 %}
+      <nav class="agenda-pager" aria-label="Páginas da agenda">
+        {% if agenda_page.has_previous %}
+          <a class="btn sm ghost-navy" href="?page={{ agenda_page.previous_page_number }}#agenda">← Anterior</a>
+        {% else %}
+          <span class="btn sm ghost-navy disabled" aria-disabled="true">← Anterior</span>
+        {% endif %}
+        <span class="agenda-pager-meta">
+          Página {{ agenda_page.number }} de {{ agenda_page.paginator.num_pages }}
+        </span>
+        {% if agenda_page.has_next %}
+          <a class="btn sm ghost-navy" href="?page={{ agenda_page.next_page_number }}#agenda">Próxima →</a>
+        {% else %}
+          <span class="btn sm ghost-navy disabled" aria-disabled="true">Próxima →</span>
+        {% endif %}
+      </nav>
+    {% endif %}
   </div>
 </section>
 
