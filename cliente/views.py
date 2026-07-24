@@ -6,13 +6,13 @@ import json
 import logging
 
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
-
-from django.urls import reverse
 
 from .forms import CadastroInscricaoForm, DepoimentoForm
 from .models import Curso, Depoimento, Inscricao, Live, Pagamento
