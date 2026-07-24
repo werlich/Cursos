@@ -36,6 +36,29 @@ class Curso(models.Model):
     def __str__(self) -> str:
         return self.nome
 
+    @property
+    def imagem_static(self) -> str:
+        """Caminho relativo em static/ para a imagem ilustrativa do curso."""
+        mapping = {
+            self.Tipo.ARRAIS: "img/cursos/arrais.jpg",
+            self.Tipo.MOTONAUTA: "img/cursos/motonauta.jpg",
+            self.Tipo.ARRAIS_MOTONAUTA: "img/cursos/arrais_motonauta.jpg",
+            self.Tipo.MESTRE: "img/cursos/mestre.jpg",
+            self.Tipo.CAPITAO: "img/cursos/mestre.jpg",
+        }
+        return mapping.get(self.tipo, "img/cursos/arrais.jpg")
+
+    @property
+    def imagem_alt(self) -> str:
+        alts = {
+            self.Tipo.ARRAIS: "Lancha — curso Arrais-Amador",
+            self.Tipo.MOTONAUTA: "Jet ski — curso Motonauta",
+            self.Tipo.ARRAIS_MOTONAUTA: "Lancha e jet ski — Arrais-Amador e Motonauta",
+            self.Tipo.MESTRE: "Cartas náuticas — curso Mestre-Amador",
+            self.Tipo.CAPITAO: "Cartas náuticas — curso Capitão-Amador",
+        }
+        return alts.get(self.tipo, self.nome)
+
 
 class Live(models.Model):
     class Status(models.TextChoices):

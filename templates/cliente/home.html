@@ -31,6 +31,9 @@
     <ul class="course-rows">
       {% for c in cursos %}
         <li>
+          <figure class="course-media">
+            <img src="{% static c.imagem_static %}" alt="{{ c.imagem_alt }}" width="320" height="240" loading="lazy">
+          </figure>
           <div class="course-main">
             <h3>{{ c.nome }}</h3>
             <p>{{ c.descricao }}</p>
