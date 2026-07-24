@@ -11,9 +11,18 @@ from .services import emitir_creditos_se_nao_atingiu, estornar_pagamento
 
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "tipo", "preco", "ativo", "ordem")
-    list_editable = ("preco", "ativo", "ordem")
+    list_display = ("nome", "tipo", "preco", "min_alunos_padrao", "ativo", "ordem")
+    list_editable = ("preco", "min_alunos_padrao", "ativo", "ordem")
     list_filter = ("ativo", "tipo")
+    fields = (
+        "nome",
+        "tipo",
+        "descricao",
+        "preco",
+        "min_alunos_padrao",
+        "ativo",
+        "ordem",
+    )
 
 
 class InscricaoInline(admin.TabularInline):
@@ -34,8 +43,17 @@ class LiveAdmin(admin.ModelAdmin):
         "min_alunos",
         "tem_stream",
     )
+    list_editable = ("min_alunos", "status")
     list_filter = ("status", "curso")
     search_fields = ("titulo",)
+    fields = (
+        "curso",
+        "titulo",
+        "data_hora",
+        "min_alunos",
+        "status",
+        "stream_url",
+    )
     inlines = [InscricaoInline]
     actions = ["action_emitir_creditos", "action_marcar_confirmada", "action_encerrar"]
 

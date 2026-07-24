@@ -13,6 +13,7 @@ class Curso(models.Model):
     class Tipo(models.TextChoices):
         ARRAIS = "arrais", "Arrais-Amador"
         MOTONAUTA = "motonauta", "Motonauta"
+        ARRAIS_MOTONAUTA = "arrais_motonauta", "Arrais-Amador e Motonauta"
         MESTRE = "mestre", "Mestre-Amador"
         CAPITAO = "capitao", "Capitão-Amador"
 
@@ -22,7 +23,7 @@ class Curso(models.Model):
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("29.90"))
     min_alunos_padrao = models.PositiveSmallIntegerField(
         default=5,
-        help_text="Mínimo de alunos pagos para fechar turma neste curso",
+        help_text="Mínimo de alunos pagos para fechar turma neste curso (padrão das lives)",
     )
     ativo = models.BooleanField(default=True)
     ordem = models.PositiveSmallIntegerField(default=0)
