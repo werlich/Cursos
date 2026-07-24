@@ -168,7 +168,7 @@ PRECO_PADRAO = os.environ.get("PRECO_PADRAO", "29.90")
 
 JAZZMIN_SETTINGS = {
     "site_title": "SIGNAU Cursos",
-    "site_header": "SIGNAU Cursos Live",
+    "site_header": "SIGNAU Cursos Online",
     "site_brand": "SIGNAU Cursos",
     "site_logo": "img/signau-logo.png",
     "login_logo": "img/signau-logo.png",

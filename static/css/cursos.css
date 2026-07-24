@@ -602,17 +602,22 @@ a:hover { text-decoration: underline; }
   right: 1rem;
   bottom: 1rem;
   z-index: 50;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  min-height: 52px;
+  padding: 0.65rem 1rem 0.65rem 0.85rem;
+  border-radius: 999px;
   background: var(--wa);
   color: #fff;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   box-shadow: 0 10px 28px rgba(37, 211, 102, 0.35);
   text-decoration: none;
+  font-weight: 650;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
 }
 .wa-float:hover { color: #fff; text-decoration: none; transform: translateY(-2px); }
+.wa-float svg { flex-shrink: 0; }
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(16px); }
