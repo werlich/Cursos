@@ -25,6 +25,28 @@
       <p><a class="btn primary" href="{{ stream_url }}" target="_blank" rel="noopener">Entrar na transmissão OBS</a></p>
     {% endif %}
 
+    <header class="band-head" style="margin-top:1.5rem">
+      <p class="eyebrow">Turma</p>
+      <h2>Alunos inscritos</h2>
+      <p>{{ alunos|length }} pagamento(s) confirmado(s)</p>
+    </header>
+    <ul class="agenda-rows">
+      {% for aluno in alunos %}
+        <li>
+          <time>
+            <span class="d">{{ forloop.counter }}</span>
+            <span class="w">{{ aluno.get_status_display }}</span>
+          </time>
+          <div class="agenda-info">
+            <strong>{{ aluno.cliente.nome }}</strong>
+            <span>{{ aluno.cliente.email }}</span>
+          </div>
+        </li>
+      {% empty %}
+        <li class="agenda-empty">Nenhum aluno pago nesta live ainda.</li>
+      {% endfor %}
+    </ul>
+
     <div class="notice">
       <p>Confirmação da inscrição no WhatsApp:</p>
       <a class="btn primary" href="{{ wa_confirm_url }}" target="_blank" rel="noopener">Abrir confirmação no WhatsApp</a>

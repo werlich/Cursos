@@ -206,6 +206,11 @@ def sala(request: HttpRequest, token: str) -> HttpResponse:
         return redirect("cliente:pagamento", token=token)
     live = insc.live
     liberado = live.status in (Live.Status.CONFIRMADA, Live.Status.ABERTA, Live.Status.ENCERRADA)
+    alunos = (
+        live.inscricoes.select_related("cliente")
+        .filter(status__in=[Inscricao.Status.PAGO, Inscricao.Status.CONFIRMADO])
+        .order_by("criada_em")
+    )
     return render(
         request,
         "cliente/sala.html",
@@ -217,6 +222,7 @@ def sala(request: HttpRequest, token: str) -> HttpResponse:
             "faltam": live.vagas_restantes,
             "min_alunos": live.min_alunos,
             "inscritos": live.inscritos_pagos,
+            "alunos": alunos,
             "wa_confirm_url": aluno_wa_me_link(insc),
             "whatsapp_url": school_whatsapp_link(),
         },

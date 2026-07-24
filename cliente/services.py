@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 from decimal import Decimal
 
@@ -41,15 +42,29 @@ def criar_pagamento_pix(
     charge = client.create_payment(amount=valor, redirect_url=retorno)
 
     checkout = charge.get("checkout_url") or ""
-    if client.demo and not checkout:
-        checkout = reverse(
-            "cliente:pagamento_demo_confirmar",
-            kwargs={"token": inscricao.token_acesso},
-        )
-        if request is not None:
-            # demo confirma via POST na própria página; invoice aponta para a página de pagamento
-            checkout = request.build_absolute_uri(
-                reverse("cliente:pagamento", kwargs={"token": inscricao.token_acesso})
+    pix_qr = charge.get("pix_qr_code") or ""
+    pix_copia = charge.get("pix_copia_cola") or ""
+
+    if client.demo:
+        if not checkout:
+            path = reverse("cliente:pagamento", kwargs={"token": inscricao.token_acesso})
+            checkout = request.build_absolute_uri(path) if request is not None else path
+        if not pix_qr:
+            svg = (
+                '<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220">'
+                '<rect width="100%" height="100%" fill="#fff"/>'
+                '<rect x="16" y="16" width="188" height="188" fill="none" '
+                'stroke="#053050" stroke-width="4"/>'
+                '<text x="40" y="100" font-size="16" fill="#053050">PIX DEMO</text>'
+                f'<text x="40" y="128" font-size="16" fill="#053050">R$ {valor:.2f}</text>'
+                "</svg>"
+            )
+            pix_qr = "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+        if not pix_copia:
+            pix_copia = (
+                f"00020126580014BR.GOV.BCB.PIX0136{charge['reference']}"
+                f"520400005303986540{valor:.2f}5802BR5925SIGNAU CURSOS LIVE"
+                f"6009FLORIANOPOLIS62070503***6304DEMO"
             )
 
     return Pagamento.objects.create(
@@ -58,6 +73,8 @@ def criar_pagamento_pix(
         livepix_payment_id=charge["payment_id"],
         livepix_reference=charge["reference"],
         invoice_url=checkout,
+        pix_qr_code=pix_qr,
+        pix_copia_cola=pix_copia,
         status=Pagamento.Status.PENDENTE,
     )
 

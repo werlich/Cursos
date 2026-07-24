@@ -4,7 +4,7 @@
 <section class="band page-top">
   <div class="wrap narrow">
     <header class="band-head">
-      <h1>Pagamento via PIX</h1>
+      <h1>{% if demo %}Checkout DEMO{% else %}Pagamento via PIX{% endif %}</h1>
       <p>{{ inscricao.live.titulo }} · {{ inscricao.cliente.nome }} · R$ {{ pagamento.valor }}</p>
     </header>
 
@@ -12,21 +12,24 @@
       {% if pagamento.invoice_url and not demo %}
         <p>Você será direcionado ao checkout <strong>LivePix</strong> para pagar com PIX.</p>
         <a class="btn primary" id="pay-btn" href="{{ pagamento.invoice_url }}">Pagar com PIX (LivePix)</a>
-      {% elif pagamento.pix_qr_code %}
+      {% endif %}
+
+      {% if pagamento.pix_qr_code %}
         <img class="qr" src="{{ pagamento.pix_qr_code }}" alt="QR Code PIX">
       {% endif %}
+
       {% if pagamento.pix_copia_cola and pagamento.pix_copia_cola != "CRÉDITO" %}
         <label for="pix-payload">PIX Copia e Cola</label>
         <textarea readonly rows="4" id="pix-payload">{{ pagamento.pix_copia_cola }}</textarea>
-        <button type="button" class="btn" onclick="navigator.clipboard.writeText(document.getElementById('pix-payload').value)">Copiar</button>
+        <button type="button" class="btn ghost" style="color:var(--navy);border-color:var(--line)" onclick="navigator.clipboard.writeText(document.getElementById('pix-payload').value)">Copiar código PIX</button>
       {% endif %}
     </div>
 
     {% if demo %}
     <form method="post" action="{% url 'cliente:pagamento_demo_confirmar' token=inscricao.token_acesso %}" class="demo-box">
       {% csrf_token %}
-      <p>Modo DEMO (LivePix). Simule a confirmação do pagamento:</p>
-      <button type="submit" class="btn primary">Confirmar pagamento (demo)</button>
+      <p><strong>Modo demonstração</strong> — LivePix ainda não está com credenciais de produção. Use o botão abaixo para simular o pagamento e liberar a sala.</p>
+      <button type="submit" class="btn primary">Confirmar pagamento (simular checkout)</button>
     </form>
     {% endif %}
 
