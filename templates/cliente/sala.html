@@ -13,8 +13,8 @@
 
     {% if live.status == "credito" %}
       <div class="notice">
-        Esta turma não atingiu {{ min_alunos }} alunos. Seu pagamento foi convertido em
-        <strong>crédito</strong> para o próximo curso.
+        Esta turma não atingiu {{ min_alunos }} alunos. Seu pagamento vira
+        <strong>crédito</strong> para o próximo curso ou devolução do Pix.
       </div>
     {% elif not stream_url %}
       <div class="notice">
