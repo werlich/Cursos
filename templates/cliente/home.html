@@ -45,6 +45,7 @@
               {% endif %}
               <span class="price">R$ {{ c.preco }}</span>
             </div>
+            <span class="meta">mín. {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</span>
             {% if c.proxima_live %}
               <div
                 class="enroll-progress{% if c.progress_pct >= 100 %} is-full{% endif %}"
@@ -61,7 +62,6 @@
               </div>
               <a class="link-action" href="{% url 'cliente:cadastro' %}?live={{ c.proxima_live.pk }}">Inscrever →</a>
             {% else %}
-              <span class="meta">mín. {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</span>
               <a class="link-action" href="{% url 'cliente:cadastro' %}">Inscrever →</a>
             {% endif %}
           </div>
