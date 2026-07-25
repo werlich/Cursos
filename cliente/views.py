@@ -31,7 +31,7 @@ FALLBACK_TESTIMONIALS = [
     {
         "nome": "Ana Paula",
         "curso": "Arrais-Amador",
-        "texto": "A live foi objetiva e direta ao ponto. Passei no exame na primeira tentativa.",
+        "texto": "O curso foi objetivo e direto ao ponto. Passei no exame na primeira tentativa.",
         "nota": 5,
         "cidade": "Florianópolis",
         "estado": "SC",
@@ -111,7 +111,7 @@ def home(request: HttpRequest) -> HttpResponse:
             "avaliacao_url": avaliacao_url,
             "avaliacao_qr": qr_data_uri(avaliacao_url),
             "whatsapp_url": school_whatsapp_link(
-                "Olá! Vim pelo site live.signau.cc e quero saber mais sobre as lives."
+                "Olá! Vim pelo site live.signau.cc e quero saber mais sobre os cursos."
             ),
         },
     )
@@ -183,7 +183,7 @@ def cadastro(request: HttpRequest) -> HttpResponse:
                         return redirect("cliente:pagamento", token=insc.token_acesso)
                     criar_pagamento_pix(insc, request=request)
             except IntegrityError:
-                form.add_error(None, "Já existe inscrição para este e-mail nesta live.")
+                form.add_error(None, "Já existe inscrição para este e-mail neste curso.")
             except Exception as exc:
                 logger.exception("Erro ao criar pagamento: %s", exc)
                 form.add_error(None, f"Não foi possível gerar o PIX: {exc}")

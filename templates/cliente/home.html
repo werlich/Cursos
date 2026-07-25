@@ -26,7 +26,7 @@
     <header class="band-head">
       <p class="eyebrow">Oferta</p>
       <h2>Cursos</h2>
-      <p>Se a turma não fechar o mínimo, o valor vira crédito para a próxima live.</p>
+      <p>Se a turma não fechar o mínimo, o valor vira crédito para o próximo curso.</p>
     </header>
     <ul class="course-rows">
       {% for c in cursos %}
@@ -80,7 +80,7 @@
           <a class="btn primary sm" href="{% url 'cliente:cadastro' %}?live={{ live.pk }}">Reservar</a>
         </li>
       {% empty %}
-        <li class="agenda-empty">Nenhuma live aberta no momento.</li>
+        <li class="agenda-empty">Nenhum curso aberto no momento.</li>
       {% endfor %}
     </ul>
     {% if agenda_page.paginator.num_pages > 1 %}

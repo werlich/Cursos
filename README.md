@@ -1,11 +1,11 @@
-# SIGNAU Cursos Live
+# SIGNAU Cursos
 
-Plataforma de aulas online em **live.signau.cc**: cadastro de interessados, pagamento PIX (**LivePix**) e sala com link OBS.
+Plataforma de cursos online em **live.signau.cc**: cadastro de interessados, pagamento PIX (**LivePix**) e área do aluno com Meet, materiais e gravação.
 
 ## Stack
 
 - Django + Jazzmin
-- App **Cliente** (cadastro, lives, pagamentos, créditos)
+- App **Cliente** (cadastro, cursos agendados, pagamentos, créditos)
 - LivePix checkout PIX (`LIVEPIX_DEMO=true` para desenvolvimento)
 - Deploy VPS no padrão SIGNAU (Nginx + Gunicorn + MySQL)
 
@@ -18,7 +18,7 @@ Plataforma de aulas online em **live.signau.cc**: cadastro de interessados, paga
 | Mestre-Amador | R$ 29,90 |
 | Capitão-Amador | R$ 29,90 |
 
-Lives: **segundas, quartas e sextas**. Turma mínima: **10** pagamentos. Se não fechar, o valor vira **crédito** para a próxima live (estorno manual no admin / carteira LivePix).
+Cursos: **segundas, quartas e sextas**. Turma mínima: **10** pagamentos. Se não fechar, o valor vira **crédito** para o próximo curso (estorno manual no admin / carteira LivePix).
 
 ## Local
 
@@ -50,7 +50,7 @@ git push origin main
 ## Fluxo do aluno
 
 1. Acessa `https://live.signau.cc`
-2. Informa nome, e-mail, WhatsApp e escolhe a live
+2. Informa nome, e-mail, WhatsApp e escolhe o curso
 3. É redirecionado ao checkout LivePix (PIX)
 4. Após pagamento, acessa a área do aluno (`/aluno/<token>/`) com Meet, materiais, gravação e widget LivePix
 
@@ -58,7 +58,7 @@ git push origin main
 
 Veja o roteiro em [TESTING.md](TESTING.md).
 
-Atalho local/VPS para preparar Live + liberar inscrição sem PIX:
+Atalho local/VPS para preparar curso + liberar inscrição sem PIX:
 
 ```bash
 python manage.py prepare_e2e_test --minutes 10 --email seu@email.com

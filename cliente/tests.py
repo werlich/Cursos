@@ -1,4 +1,4 @@
-"""Testes do módulo Live — Meet, ACL, campanha e providers."""
+"""Testes do módulo de cursos — Meet, ACL, campanha e providers."""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ class LiveClassroomFixtures(TestCase):
         )
         self.live = Live.objects.create(
             curso=self.curso,
-            titulo="Live Arrais",
+            titulo="Curso Arrais",
             descricao="Aula preparatória",
             professor="Instrutor SIGNAU",
             data_hora=timezone.now() + timedelta(hours=2),
@@ -128,7 +128,7 @@ class AccessControlTests(LiveClassroomFixtures):
         )
         live2 = Live.objects.create(
             curso=self.curso,
-            titulo="Outra live",
+            titulo="Outro curso",
             data_hora=timezone.now() + timedelta(days=1),
             stream_url="https://meet.google.com/xyz",
             min_alunos=2,
@@ -139,8 +139,8 @@ class AccessControlTests(LiveClassroomFixtures):
         url = reverse("cliente:aluno_aulas", kwargs={"token": self.insc.token_acesso})
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, "Live Arrais")
-        self.assertNotContains(resp, "Outra live")
+        self.assertContains(resp, "Curso Arrais")
+        self.assertNotContains(resp, "Outro curso")
 
     def test_detalhe_aula_alheia_404(self):
         outro = Cliente.objects.create(
@@ -148,7 +148,7 @@ class AccessControlTests(LiveClassroomFixtures):
         )
         live2 = Live.objects.create(
             curso=self.curso,
-            titulo="Live secreta",
+            titulo="Curso secreto",
             data_hora=timezone.now() + timedelta(days=2),
             min_alunos=2,
         )

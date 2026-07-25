@@ -15,7 +15,7 @@ CURSOS = [
     (
         Curso.Tipo.ARRAIS_MOTONAUTA,
         "Arrais-Amador e Motonauta",
-        "Preparatório ao vivo para Arrais-Amador e Motonauta (NORMAM-211/212).",
+        "Preparatório online para Arrais-Amador e Motonauta (NORMAM-211/212).",
         0,
         Decimal("29.90"),
         5,
@@ -24,7 +24,7 @@ CURSOS = [
     (
         Curso.Tipo.ARRAIS,
         "Arrais-Amador",
-        "Preparatório ao vivo para o exame de Arrais-Amador (NORMAM-211).",
+        "Preparatório online para o exame de Arrais-Amador (NORMAM-211).",
         1,
         Decimal("29.90"),
         5,
@@ -33,7 +33,7 @@ CURSOS = [
     (
         Curso.Tipo.MOTONAUTA,
         "Motonauta",
-        "Preparatório ao vivo para o exame de Motonauta (NORMAM-212).",
+        "Preparatório online para o exame de Motonauta (NORMAM-212).",
         2,
         Decimal("29.90"),
         5,
@@ -42,7 +42,7 @@ CURSOS = [
     (
         Curso.Tipo.MESTRE,
         "Mestre-Amador",
-        "Preparatório ao vivo para o exame de Mestre-Amador.",
+        "Preparatório online para o exame de Mestre-Amador.",
         3,
         Decimal("150.00"),
         2,
@@ -51,7 +51,7 @@ CURSOS = [
     (
         Curso.Tipo.CAPITAO,
         "Capitão-Amador",
-        "Preparatório live para exame de Capitão-Amador.",
+        "Preparatório online para exame de Capitão-Amador.",
         4,
         Decimal("29.90"),
         10,
@@ -61,7 +61,7 @@ CURSOS = [
 
 
 class Command(BaseCommand):
-    help = "Sincroniza catálogo de cursos, preços, mínimos e próximas lives"
+    help = "Sincroniza catálogo de cursos, preços, mínimos e próximas turmas"
 
     def handle(self, *args, **options):
         # Remove duplicatas ativas com o mesmo nome (mantém o de menor id)
@@ -84,11 +84,14 @@ class Command(BaseCommand):
             curso.ativo = ativo
             curso.ordem = ordem
             curso.save()
-            # Atualiza lives abertas deste curso
+            # Atualiza turmas abertas deste curso
             Live.objects.filter(
                 curso=curso,
                 status__in=[Live.Status.ABERTA, Live.Status.CONFIRMADA],
             ).update(min_alunos=min_alunos)
+            for turma in Live.objects.filter(curso=curso, titulo__startswith="Live "):
+                turma.titulo = "Curso " + turma.titulo[5:]
+                turma.save(update_fields=["titulo"])
             if not ativo:
                 Live.objects.filter(
                     curso=curso,
@@ -112,7 +115,7 @@ class Command(BaseCommand):
                 curso=curso,
                 data_hora=dt,
                 defaults={
-                    "titulo": f"Live {curso.nome}",
+                    "titulo": f"Curso {curso.nome}",
                     "status": Live.Status.ABERTA,
                     "min_alunos": curso.min_alunos_padrao,
                     "stream_url": "",
@@ -120,10 +123,10 @@ class Command(BaseCommand):
             )
             if created:
                 criadas += 1
-                self.stdout.write(f"Live criada: {obj}")
+                self.stdout.write(f"Curso criado: {obj}")
             else:
                 if obj.min_alunos != curso.min_alunos_padrao and obj.status == Live.Status.ABERTA:
                     obj.min_alunos = curso.min_alunos_padrao
                     obj.save(update_fields=["min_alunos"])
 
-        self.stdout.write(self.style.SUCCESS(f"Catálogo sincronizado. {criadas} live(s) nova(s)."))
+        self.stdout.write(self.style.SUCCESS(f"Catálogo sincronizado. {criadas} curso(s) novo(s)."))

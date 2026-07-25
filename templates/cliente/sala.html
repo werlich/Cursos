@@ -1,5 +1,5 @@
 {% extends "cliente/base.html" %}
-{% block title %}Sala ao vivo — {{ live.titulo }}{% endblock %}
+{% block title %}Sala do curso — {{ live.titulo }}{% endblock %}
 {% block content %}
 <section class="band page-top">
   <div class="wrap narrow">
@@ -14,7 +14,7 @@
     {% if live.status == "credito" %}
       <div class="notice">
         Esta turma não atingiu {{ min_alunos }} alunos. Seu pagamento foi convertido em
-        <strong>crédito</strong> para a próxima live.
+        <strong>crédito</strong> para o próximo curso.
       </div>
     {% elif not stream_url %}
       <div class="notice">
@@ -43,7 +43,7 @@
           </div>
         </li>
       {% empty %}
-        <li class="agenda-empty">Nenhum aluno pago nesta live ainda.</li>
+        <li class="agenda-empty">Nenhum aluno pago neste curso ainda.</li>
       {% endfor %}
     </ul>
 

@@ -56,9 +56,9 @@ class CadastroInscricaoForm(forms.Form):
         help_text="DDD + número, só dígitos",
     )
     live = forms.ModelChoiceField(
-        label="Live / turma",
+        label="Curso / turma",
         queryset=Live.objects.none(),
-        empty_label="Selecione a aula",
+        empty_label="Selecione o curso",
     )
     usar_credito = forms.BooleanField(
         label="Usar crédito disponível (se houver)",

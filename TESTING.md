@@ -5,7 +5,7 @@ Produção usa PIX real (`LIVEPIX_DEMO=false`). Para testar sem gastar, use o **
 ## Fluxo
 
 ```text
-Admin prepara Live → Cadastro → PIX LivePix → Área do aluno
+Admin prepara curso → Cadastro → PIX LivePix → Área do aluno
                                       → Entrar na Aula (Meet)
                                       → Widget doação
                                       → Material / Gravação
@@ -20,7 +20,7 @@ cd /home/claudio/Desktop/Cursos
 
 Cobre: janela Meet, ACL, redirect `/sala/` → área do aluno, widget, materiais/gravações, providers.
 
-## 2) Preparar Live no admin
+## 2) Preparar curso no admin
 
 `https://live.signau.cc/admin/`
 
@@ -33,7 +33,7 @@ Cobre: janela Meet, ACL, redirect `/sala/` → área do aluno, widget, materiais
 
 ## 3) Caminho A — sem pagar (recomendado)
 
-1. [Cadastro](https://live.signau.cc/cadastro/) com e-mail novo + live de teste  
+1. [Cadastro](https://live.signau.cc/cadastro/) com e-mail novo + curso de teste  
 2. Na tela de pagamento, **não pague**  
 3. Admin → Inscrições → status **Pago** (ou Confirmado)  
 4. Copie `token_acesso`  
@@ -61,7 +61,7 @@ Webhook: `https://live.signau.cc/webhooks/livepix/`
 
 ## 5) Janela Meet (3 momentos)
 
-Na mesma live, só mude `data_hora` e recarregue a área do aluno:
+No mesmo curso, só mude `data_hora` e recarregue a área do aluno:
 
 1. +1 hora → bloqueado  
 2. agora − 1 min → liberado  
@@ -69,7 +69,7 @@ Na mesma live, só mude `data_hora` e recarregue a área do aluno:
 
 ## 6) ACL
 
-- Token A acessando live de outro aluno → 404  
+- Token A acessando curso de outro aluno → 404  
 - Inscrição Pendente em `/aluno/<token>/` → redirect pagamento  
 - Token inventado → 404  
 

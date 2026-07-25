@@ -1,4 +1,4 @@
-"""Modelos do app Cliente — cadastro, lives, pagamentos e créditos."""
+"""Modelos do app Cliente — cadastro, cursos agendados, pagamentos e créditos."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ class Curso(models.Model):
     preco = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("29.90"))
     min_alunos_padrao = models.PositiveSmallIntegerField(
         default=5,
-        help_text="Mínimo de alunos pagos para fechar turma neste curso (padrão das lives)",
+        help_text="Mínimo de alunos pagos para fechar turma neste curso (padrão das turmas)",
     )
     ativo = models.BooleanField(default=True)
     ordem = models.PositiveSmallIntegerField(default=0)
@@ -98,8 +98,8 @@ class Live(models.Model):
 
     class Meta:
         ordering = ["data_hora"]
-        verbose_name = "Live"
-        verbose_name_plural = "Lives"
+        verbose_name = "Curso agendado"
+        verbose_name_plural = "Cursos agendados"
 
     def __str__(self) -> str:
         return f"{self.titulo} — {timezone.localtime(self.data_hora):%d/%m/%Y %H:%M}"
@@ -180,7 +180,12 @@ class Inscricao(models.Model):
         ESTORNADO = "estornado", "Estornado"
 
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="inscricoes")
-    live = models.ForeignKey(Live, on_delete=models.PROTECT, related_name="inscricoes")
+    live = models.ForeignKey(
+        Live,
+        on_delete=models.PROTECT,
+        related_name="inscricoes",
+        verbose_name="Curso agendado",
+    )
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDENTE
     )
@@ -351,7 +356,12 @@ class Depoimento(models.Model):
 
 
 class Material(models.Model):
-    live = models.ForeignKey(Live, on_delete=models.CASCADE, related_name="materiais")
+    live = models.ForeignKey(
+        Live,
+        on_delete=models.CASCADE,
+        related_name="materiais",
+        verbose_name="Curso agendado",
+    )
     titulo = models.CharField(max_length=120)
     arquivo = models.FileField(upload_to="materiais/%Y/%m/", blank=True)
     url = models.URLField(blank=True, help_text="Link externo (se não houver arquivo).")
@@ -377,7 +387,12 @@ class Material(models.Model):
 
 
 class Gravacao(models.Model):
-    live = models.ForeignKey(Live, on_delete=models.CASCADE, related_name="gravacoes")
+    live = models.ForeignKey(
+        Live,
+        on_delete=models.CASCADE,
+        related_name="gravacoes",
+        verbose_name="Curso agendado",
+    )
     titulo = models.CharField(max_length=120)
     url = models.URLField(help_text="Link da gravação (YouTube, Drive, etc.)")
     publicado_em = models.DateTimeField(default=timezone.now)
@@ -396,7 +411,10 @@ class LivePixCampanha(models.Model):
     """Configuração de apoio/doação LivePix (somente exibição nesta versão)."""
 
     live = models.OneToOneField(
-        Live, on_delete=models.CASCADE, related_name="livepix_campanha"
+        Live,
+        on_delete=models.CASCADE,
+        related_name="livepix_campanha",
+        verbose_name="Curso agendado",
     )
     nome_campanha = models.CharField(max_length=120)
     widget_url = models.URLField(

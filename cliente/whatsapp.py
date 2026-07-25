@@ -36,8 +36,8 @@ def mensagem_confirmacao(inscricao) -> str:
     when = live.data_hora.astimezone().strftime("%d/%m/%Y às %H:%M")
     return (
         f"Olá, {cliente.nome}! ✅ Inscrição confirmada na SIGNAU Cursos.\n\n"
-        f"Curso: {live.curso.nome}\n"
-        f"Live: {live.titulo}\n"
+        f"Modalidade: {live.curso.nome}\n"
+        f"Curso: {live.titulo}\n"
         f"Data: {when}\n"
         f"Valor: R$ {inscricao.pagamento.valor if hasattr(inscricao, 'pagamento') else live.curso.preco}\n\n"
         f"Guarde o link da sala (enviado no site). "

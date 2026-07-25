@@ -202,7 +202,7 @@ JAZZMIN_SETTINGS = {
     ],
     "icons": {
         "cliente.Curso": "fas fa-graduation-cap",
-        "cliente.Live": "fas fa-broadcast-tower",
+        "cliente.Live": "fas fa-chalkboard-teacher",
         "cliente.Material": "fas fa-file-alt",
         "cliente.Gravacao": "fas fa-video",
         "cliente.LivePixCampanha": "fas fa-hand-holding-heart",

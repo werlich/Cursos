@@ -1,4 +1,4 @@
-"""Admin Jazzmin — Cliente, Lives, Pagamentos e ações de turma."""
+"""Admin Jazzmin — Cliente, cursos agendados, pagamentos e ações de turma."""
 
 from __future__ import annotations
 
@@ -119,17 +119,17 @@ class LiveAdmin(admin.ModelAdmin):
     def tem_meet(self, obj: Live) -> bool:
         return bool(obj.stream_url)
 
-    @admin.action(description="Cancelar lives selecionadas")
+    @admin.action(description="Cancelar cursos selecionados")
     def action_cancelar(self, request, queryset):
         n = queryset.update(status=Live.Status.CANCELADA)
         self.message_user(
             request,
-            f"{n} live(s) marcada(s) como cancelada(s). "
-            "(Lives com inscrição não podem ser apagadas — use cancelar.)",
+            f"{n} curso(s) marcado(s) como cancelado(s). "
+            "(Cursos com inscrição não podem ser apagados — use cancelar.)",
             messages.SUCCESS,
         )
 
-    @admin.action(description="Excluir lives sem inscrição")
+    @admin.action(description="Excluir cursos sem inscrição")
     def action_excluir_sem_inscricoes(self, request, queryset):
         sem = queryset.annotate(_n=Count("inscricoes")).filter(_n=0)
         com = queryset.annotate(_n=Count("inscricoes")).filter(_n__gt=0)
@@ -137,17 +137,17 @@ class LiveAdmin(admin.ModelAdmin):
         blocked = com.count()
         if deleted:
             self.message_user(
-                request, f"{deleted} live(s) sem inscrição excluída(s).", messages.SUCCESS
+                request, f"{deleted} curso(s) sem inscrição excluído(s).", messages.SUCCESS
             )
         if blocked:
             self.message_user(
                 request,
-                f"{blocked} live(s) mantida(s): possuem inscrição (PROTECT). "
-                "Use “Cancelar lives selecionadas”.",
+                f"{blocked} curso(s) mantido(s): possuem inscrição (PROTECT). "
+                "Use “Cancelar cursos selecionados”.",
                 messages.WARNING,
             )
         if not deleted and not blocked:
-            self.message_user(request, "Nenhuma live selecionada.", messages.INFO)
+            self.message_user(request, "Nenhum curso selecionado.", messages.INFO)
 
     @admin.action(description="Emitir créditos (turma < mínimo)")
     def action_emitir_creditos(self, request, queryset):
@@ -159,12 +159,12 @@ class LiveAdmin(admin.ModelAdmin):
     @admin.action(description="Marcar turma como confirmada")
     def action_marcar_confirmada(self, request, queryset):
         queryset.update(status=Live.Status.CONFIRMADA)
-        self.message_user(request, "Lives confirmadas.", messages.SUCCESS)
+        self.message_user(request, "Cursos confirmados.", messages.SUCCESS)
 
-    @admin.action(description="Encerrar live")
+    @admin.action(description="Encerrar curso")
     def action_encerrar(self, request, queryset):
         queryset.update(status=Live.Status.ENCERRADA)
-        self.message_user(request, "Lives encerradas.", messages.SUCCESS)
+        self.message_user(request, "Cursos encerrados.", messages.SUCCESS)
 
 
 @admin.register(Material)

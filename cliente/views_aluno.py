@@ -50,7 +50,7 @@ class AlunoTokenMixin:
 
 
 class AlunoAulasView(AlunoTokenMixin, ListView):
-    """Lista aulas (lives) com inscrição paga/confirmada do mesmo cliente."""
+    """Lista aulas (cursos) com inscrição paga/confirmada do mesmo cliente."""
 
     template_name = "cliente/aluno_aulas.html"
     context_object_name = "aulas"
@@ -159,7 +159,7 @@ class AlunoAulaDetailView(AlunoTokenMixin, DetailView):
 
 
 class MaterialDownloadView(AlunoTokenMixin, View):
-    """Download/redirecionamento de material — só aluno matriculado na live."""
+    """Download/redirecionamento de material — só aluno matriculado no curso."""
 
     def get(self, request, token: str, material_id: int):
         material = get_object_or_404(Material, pk=material_id, ativo=True)

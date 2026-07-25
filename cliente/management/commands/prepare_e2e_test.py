@@ -1,4 +1,4 @@
-"""Prepara uma Live de teste e opcionalmente libera uma inscrição (Caminho A)."""
+"""Prepara um curso de teste e opcionalmente libera uma inscrição (Caminho A)."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from cliente.services import criar_pagamento_pix
 
 class Command(BaseCommand):
     help = (
-        "Cria/atualiza uma Live de teste com Meet, material e gravação. "
+        "Cria/atualiza um curso de teste com Meet, material e gravação. "
         "Com --email, cria inscrição e marca como PAGO (atalho sem PIX)."
     )
 
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             titulo="[TESTE E2E] Aula SIGNAU",
             defaults={
                 "curso": curso,
-                "descricao": "Live de teste do fluxo completo (Meet, material, gravação, widget).",
+                "descricao": "Curso de teste do fluxo completo (Meet, material, gravação, widget).",
                 "professor": "Instrutor SIGNAU",
                 "data_hora": inicio,
                 "duracao_minutos": 30,
@@ -81,7 +81,7 @@ class Command(BaseCommand):
         )
         self.stdout.write(
             self.style.SUCCESS(
-                f"{'Criada' if created else 'Atualizada'} Live pk={live.pk} "
+                f"{'Criado' if created else 'Atualizado'} curso pk={live.pk} "
                 f"em {timezone.localtime(live.data_hora):%d/%m/%Y %H:%M}"
             )
         )
