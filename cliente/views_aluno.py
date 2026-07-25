@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from django.conf import settings
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import DetailView, ListView, View
@@ -9,6 +10,14 @@ from django.views.generic import DetailView, ListView, View
 from .models import Gravacao, Inscricao, Live, Material
 from .providers import get_meeting_provider
 from .providers.payment import inscricao_libera_acesso
+
+
+def _livepix_widget_url(campanha=None) -> str:
+    if campanha is not None:
+        url = campanha.widget_embed_url
+        if url:
+            return url
+    return (getattr(settings, "LIVEPIX_WIDGET_URL", "") or "").strip()
 
 
 def _inscricao_por_token(token: str) -> Inscricao:
@@ -78,6 +87,7 @@ class AlunoAulasView(AlunoTokenMixin, ListView):
                     "material": material,
                     "gravacao": gravacao,
                     "campanha": campanha,
+                    "livepix_widget_url": _livepix_widget_url(campanha),
                 }
             )
         ctx["cards"] = cards
@@ -122,6 +132,7 @@ class AlunoAulaDetailView(AlunoTokenMixin, DetailView):
         campanha = getattr(live, "livepix_campanha", None)
         if campanha and not campanha.ativo:
             campanha = None
+        widget_url = _livepix_widget_url(campanha)
         ctx.update(
             {
                 "token": self.inscricao.token_acesso,
@@ -131,6 +142,7 @@ class AlunoAulaDetailView(AlunoTokenMixin, DetailView):
                 "materiais": live.materiais.filter(ativo=True),
                 "gravacoes": live.gravacoes.filter(ativo=True),
                 "campanha": campanha,
+                "livepix_widget_url": widget_url,
                 "alunos": (
                     live.inscricoes.select_related("cliente")
                     .filter(

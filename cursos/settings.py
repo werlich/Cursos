@@ -155,6 +155,10 @@ LIVEPIX_SCOPE = os.environ.get(
     "payments:write payments:read webhooks account:read",
 )
 LIVEPIX_DEMO = os.environ.get("LIVEPIX_DEMO", "true").lower() in ("1", "true", "yes")
+LIVEPIX_WIDGET_URL = os.environ.get(
+    "LIVEPIX_WIDGET_URL",
+    "https://widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a",
+).strip()
 
 # WhatsApp
 WHATSAPP_SCHOOL_NUMBER = os.environ.get("WHATSAPP_SCHOOL_NUMBER", "47933835108")

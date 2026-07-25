@@ -40,18 +40,30 @@
       {% endfor %}
     </div>
 
-    {% if campanha %}
+    {% if campanha or livepix_widget_url %}
       <aside class="livepix-support" aria-label="Apoio LivePix">
         <h2>Apoie esta aula pelo LivePix</h2>
-        <p>{{ campanha.nome_campanha }}</p>
-        {% if campanha.meta_financeira %}
-          <p class="muted">Meta R$ {{ campanha.meta_financeira }} · Arrecadado R$ {{ campanha.valor_arrecadado }}</p>
+        {% if campanha %}
+          <p>{{ campanha.nome_campanha }}</p>
+          {% if campanha.meta_financeira %}
+            <p class="muted">Meta R$ {{ campanha.meta_financeira }} · Arrecadado R$ {{ campanha.valor_arrecadado }}</p>
+          {% endif %}
         {% endif %}
-        {% if campanha.qr_display_url %}
+        {% if livepix_widget_url %}
+          <div class="livepix-widget">
+            <iframe
+              src="{{ livepix_widget_url }}"
+              title="Widget LivePix"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allow="payment *"
+            ></iframe>
+          </div>
+        {% elif campanha.qr_display_url %}
           <img class="livepix-qr" src="{{ campanha.qr_display_url }}" alt="QR Code LivePix" width="180" height="180">
-          <p class="muted">ou</p>
         {% endif %}
-        {% if campanha.link_pagamento %}
+        {% if campanha and campanha.link_pagamento %}
+          <p class="muted">ou</p>
           <a class="btn primary" href="{{ campanha.link_pagamento }}" target="_blank" rel="noopener">Contribuir</a>
         {% endif %}
       </aside>

@@ -399,6 +399,10 @@ class LivePixCampanha(models.Model):
         Live, on_delete=models.CASCADE, related_name="livepix_campanha"
     )
     nome_campanha = models.CharField(max_length=120)
+    widget_url = models.URLField(
+        blank=True,
+        help_text="Embed LivePix, ex.: https://widget.livepix.gg/embed/…",
+    )
     qr_code = models.ImageField(
         upload_to="livepix/qr/%Y/%m/",
         blank=True,
@@ -431,3 +435,10 @@ class LivePixCampanha(models.Model):
         if self.qr_code:
             return self.qr_code.url
         return self.qr_code_url or ""
+
+    @property
+    def widget_embed_url(self) -> str:
+        url = (self.widget_url or "").strip()
+        if url:
+            return url
+        return (getattr(settings, "LIVEPIX_WIDGET_URL", "") or "").strip()

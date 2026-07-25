@@ -797,6 +797,20 @@ a:hover { text-decoration: underline; }
   background: #fff;
   padding: 0.4rem;
 }
+.livepix-widget {
+  margin: 0.9rem auto 0;
+  max-width: 420px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0b1220;
+}
+.livepix-widget iframe {
+  display: block;
+  width: 100%;
+  min-height: 420px;
+  border: 0;
+}
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(16px); }

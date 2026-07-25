@@ -62,6 +62,7 @@ class LivePixCampanhaInline(admin.StackedInline):
     max_num = 1
     fields = (
         "nome_campanha",
+        "widget_url",
         "qr_code",
         "qr_code_url",
         "link_pagamento",
