@@ -532,6 +532,20 @@ a:hover { text-decoration: underline; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.enroll-progress--cal {
+  align-items: stretch;
+  width: 100%;
+  gap: 0.18rem;
+  margin-top: 0.12rem;
+}
+.enroll-progress--cal .enroll-progress-track {
+  height: 0.32rem;
+}
+.enroll-progress--cal .enroll-progress-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-align: left;
+}
 .month-cal-empty {
   margin: 1rem 0 0;
   color: var(--muted);
