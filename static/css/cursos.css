@@ -718,6 +718,86 @@ a:hover { text-decoration: underline; }
 .wa-float:hover { color: #fff; text-decoration: none; transform: translateY(-2px); }
 .wa-float svg { flex-shrink: 0; }
 
+.aula-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.aula-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.2rem 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+  background: #fff;
+}
+.aula-card h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  color: var(--navy);
+}
+.aula-meta,
+.aula-when,
+.aula-desc { margin: 0; color: var(--muted); }
+.aula-when { font-weight: 600; color: var(--navy); margin-top: 0.35rem !important; }
+.aula-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.75rem;
+  align-items: center;
+}
+.aula-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1.2rem 0 1.6rem;
+}
+.aula-empty {
+  padding: 1.2rem 0;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+.btn.disabled,
+.btn.primary.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.livepix-card {
+  border-top: 1px solid var(--line);
+  padding-top: 0.75rem;
+  display: grid;
+  gap: 0.15rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.livepix-card strong { color: var(--navy); }
+.livepix-support {
+  margin: 1.6rem 0;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+.livepix-support h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+  color: var(--navy);
+}
+.livepix-qr {
+  display: block;
+  margin: 0.9rem auto;
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.4rem;
+}
+
 @keyframes rise {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }

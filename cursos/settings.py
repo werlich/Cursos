@@ -166,6 +166,10 @@ WHATSAPP_EVOLUTION_KEY = os.environ.get("WHATSAPP_EVOLUTION_KEY", "")
 MIN_ALUNOS_TURMA = int(os.environ.get("MIN_ALUNOS_TURMA", "5"))
 PRECO_PADRAO = os.environ.get("PRECO_PADRAO", "29.90")
 
+# Providers (abstração para futuras APIs Meet / Asaas / Zoom / etc.)
+MEETING_PROVIDER = os.environ.get("MEETING_PROVIDER", "manual_url")
+PAYMENT_PROVIDER = os.environ.get("PAYMENT_PROVIDER", "livepix")
+
 JAZZMIN_SETTINGS = {
     "site_title": "SIGNAU Cursos",
     "site_header": "SIGNAU Cursos Online",
@@ -183,6 +187,9 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": [
         "cliente.Curso",
         "cliente.Live",
+        "cliente.Material",
+        "cliente.Gravacao",
+        "cliente.LivePixCampanha",
         "cliente.Cliente",
         "cliente.Inscricao",
         "cliente.Pagamento",
@@ -192,6 +199,9 @@ JAZZMIN_SETTINGS = {
     "icons": {
         "cliente.Curso": "fas fa-graduation-cap",
         "cliente.Live": "fas fa-broadcast-tower",
+        "cliente.Material": "fas fa-file-alt",
+        "cliente.Gravacao": "fas fa-video",
+        "cliente.LivePixCampanha": "fas fa-hand-holding-heart",
         "cliente.Cliente": "fas fa-user",
         "cliente.Inscricao": "fas fa-clipboard-list",
         "cliente.Pagamento": "fas fa-qrcode",

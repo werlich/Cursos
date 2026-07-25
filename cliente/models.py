@@ -68,12 +68,24 @@ class Live(models.Model):
         ENCERRADA = "encerrada", "Encerrada"
         CANCELADA = "cancelada", "Cancelada"
 
+    class MeetStatus(models.TextChoices):
+        ANTES = "antes", "Ainda não disponível"
+        ABERTA = "aberta", "Aula aberta"
+        ENCERRADA = "encerrada", "Aula encerrada"
+
     curso = models.ForeignKey(Curso, on_delete=models.PROTECT, related_name="lives")
     titulo = models.CharField(max_length=120)
+    descricao = models.TextField(blank=True)
+    professor = models.CharField(max_length=120, blank=True)
     data_hora = models.DateTimeField()
+    duracao_minutos = models.PositiveSmallIntegerField(
+        default=120,
+        help_text="Duração estimada da aula (para marcar como encerrada).",
+    )
     stream_url = models.URLField(
         blank=True,
-        help_text="Link da transmissão OBS (YouTube Live, Vimeo, player próprio, etc.)",
+        help_text="Link do Google Meet (ou outra sala). Sem API Google nesta versão.",
+        verbose_name="Link Google Meet",
     )
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.ABERTA
@@ -110,6 +122,29 @@ class Live(models.Model):
     def is_segunda_quarta_sexta(self) -> bool:
         # 0=segunda … 6=domingo (Django week_day is different; use weekday())
         return timezone.localtime(self.data_hora).weekday() in (0, 2, 4)
+
+    @property
+    def meet_abre_em(self):
+        return self.data_hora - timezone.timedelta(minutes=5)
+
+    @property
+    def meet_fecha_em(self):
+        return self.data_hora + timezone.timedelta(minutes=self.duracao_minutos or 120)
+
+    @property
+    def meet_status(self) -> str:
+        if self.status in (self.Status.ENCERRADA, self.Status.CANCELADA, self.Status.CREDITO):
+            return self.MeetStatus.ENCERRADA
+        now = timezone.now()
+        if now < self.meet_abre_em:
+            return self.MeetStatus.ANTES
+        if now > self.meet_fecha_em:
+            return self.MeetStatus.ENCERRADA
+        return self.MeetStatus.ABERTA
+
+    @property
+    def meet_pode_entrar(self) -> bool:
+        return bool(self.stream_url) and self.meet_status == self.MeetStatus.ABERTA
 
 
 class Cliente(models.Model):
@@ -168,6 +203,14 @@ class Inscricao(models.Model):
 
             self.token_acesso = secrets.token_urlsafe(32)
         super().save(*args, **kwargs)
+
+    def libera_acesso(self) -> bool:
+        """
+        Gate de acesso à aula.
+        Hoje: inscrição paga/confirmada.
+        Futuro: também validar confirmação Asaas / PaymentProvider.
+        """
+        return self.status in (self.Status.PAGO, self.Status.CONFIRMADO)
 
 
 class Pagamento(models.Model):
@@ -305,3 +348,86 @@ class Depoimento(models.Model):
         if cidade and estado:
             return f"{cidade}/{estado}"
         return cidade or estado
+
+
+class Material(models.Model):
+    live = models.ForeignKey(Live, on_delete=models.CASCADE, related_name="materiais")
+    titulo = models.CharField(max_length=120)
+    arquivo = models.FileField(upload_to="materiais/%Y/%m/", blank=True)
+    url = models.URLField(blank=True, help_text="Link externo (se não houver arquivo).")
+    ativo = models.BooleanField(default=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["titulo"]
+        verbose_name = "Material"
+        verbose_name_plural = "Materiais"
+
+    def __str__(self) -> str:
+        return f"{self.titulo} ({self.live})"
+
+    @property
+    def tem_download(self) -> bool:
+        return bool(self.arquivo) or bool(self.url)
+
+    def resolve_url(self) -> str:
+        if self.arquivo:
+            return self.arquivo.url
+        return self.url or ""
+
+
+class Gravacao(models.Model):
+    live = models.ForeignKey(Live, on_delete=models.CASCADE, related_name="gravacoes")
+    titulo = models.CharField(max_length=120)
+    url = models.URLField(help_text="Link da gravação (YouTube, Drive, etc.)")
+    publicado_em = models.DateTimeField(default=timezone.now)
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-publicado_em"]
+        verbose_name = "Gravação"
+        verbose_name_plural = "Gravações"
+
+    def __str__(self) -> str:
+        return f"{self.titulo} ({self.live})"
+
+
+class LivePixCampanha(models.Model):
+    """Configuração de apoio/doação LivePix (somente exibição nesta versão)."""
+
+    live = models.OneToOneField(
+        Live, on_delete=models.CASCADE, related_name="livepix_campanha"
+    )
+    nome_campanha = models.CharField(max_length=120)
+    qr_code = models.ImageField(
+        upload_to="livepix/qr/%Y/%m/",
+        blank=True,
+        help_text="Imagem do QR Code LivePix",
+    )
+    qr_code_url = models.URLField(
+        blank=True, help_text="URL da imagem do QR (alternativa ao upload)."
+    )
+    link_pagamento = models.URLField(blank=True, help_text="Link Contribuir / checkout")
+    meta_financeira = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("0.00")
+    )
+    valor_arrecadado = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        help_text="Preparar para integração futura com a API LivePix.",
+    )
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Campanha LivePix"
+        verbose_name_plural = "Campanhas LivePix"
+
+    def __str__(self) -> str:
+        return f"{self.nome_campanha} — {self.live}"
+
+    @property
+    def qr_display_url(self) -> str:
+        if self.qr_code:
+            return self.qr_code.url
+        return self.qr_code_url or ""

@@ -1,0 +1,85 @@
+{% extends "cliente/base.html" %}
+{% block title %}{{ live.titulo }} — Área do aluno{% endblock %}
+{% block content %}
+<section class="band page-top">
+  <div class="wrap narrow">
+    <p class="eyebrow"><a href="{% url 'cliente:aluno_aulas' token=token %}">← Minhas aulas</a></p>
+    <header class="band-head">
+      <h1>{{ live.titulo }}</h1>
+      <p>
+        {{ live.curso.nome }}
+        {% if live.professor %} · Prof. {{ live.professor }}{% endif %}
+        · {{ live.data_hora|date:"d/m/Y" }} · {{ live.data_hora|date:"H:i" }}
+      </p>
+    </header>
+
+    {% if live.descricao %}
+      <p class="aula-desc">{{ live.descricao }}</p>
+    {% endif %}
+
+    <div class="aula-actions">
+      {% if join.pode_entrar %}
+        <a class="btn primary" href="{{ join.url }}" target="_blank" rel="noopener">Entrar na Aula</a>
+      {% else %}
+        <span class="btn primary disabled" aria-disabled="true">{{ join.label }}</span>
+        {% if join.status == "antes" and live.stream_url %}
+          <p class="muted">O botão libera 5 minutos antes do horário da aula.</p>
+        {% endif %}
+      {% endif %}
+
+      {% for m in materiais %}
+        <a class="btn ghost-navy" href="{% url 'cliente:aluno_material' token=token material_id=m.pk %}">Baixar Material{% if materiais|length > 1 %}: {{ m.titulo }}{% endif %}</a>
+      {% empty %}
+        <span class="btn ghost-navy disabled">Material em breve</span>
+      {% endfor %}
+
+      {% for g in gravacoes %}
+        <a class="btn ghost-navy" href="{% url 'cliente:aluno_gravacao' token=token gravacao_id=g.pk %}" target="_blank" rel="noopener">Assistir Gravação{% if gravacoes|length > 1 %}: {{ g.titulo }}{% endif %}</a>
+      {% empty %}
+        <span class="btn ghost-navy disabled">Gravação em breve</span>
+      {% endfor %}
+    </div>
+
+    {% if campanha %}
+      <aside class="livepix-support" aria-label="Apoio LivePix">
+        <h2>Apoie esta aula pelo LivePix</h2>
+        <p>{{ campanha.nome_campanha }}</p>
+        {% if campanha.meta_financeira %}
+          <p class="muted">Meta R$ {{ campanha.meta_financeira }} · Arrecadado R$ {{ campanha.valor_arrecadado }}</p>
+        {% endif %}
+        {% if campanha.qr_display_url %}
+          <img class="livepix-qr" src="{{ campanha.qr_display_url }}" alt="QR Code LivePix" width="180" height="180">
+          <p class="muted">ou</p>
+        {% endif %}
+        {% if campanha.link_pagamento %}
+          <a class="btn primary" href="{{ campanha.link_pagamento }}" target="_blank" rel="noopener">Contribuir</a>
+        {% endif %}
+      </aside>
+    {% endif %}
+
+    <header class="band-head" style="margin-top:1.8rem">
+      <p class="eyebrow">Turma</p>
+      <h2>Alunos inscritos</h2>
+      <p>{{ alunos|length }} pagamento(s) confirmado(s)</p>
+    </header>
+    <ul class="agenda-rows">
+      {% for aluno in alunos %}
+        <li>
+          <time>
+            <span class="d">{{ forloop.counter }}</span>
+            <span class="w">{{ aluno.get_status_display }}</span>
+          </time>
+          <div class="agenda-info">
+            <strong>{{ aluno.cliente.nome }}</strong>
+            <span>{{ aluno.cliente.email }}</span>
+          </div>
+        </li>
+      {% empty %}
+        <li class="agenda-empty">Nenhum aluno pago nesta live ainda.</li>
+      {% endfor %}
+    </ul>
+
+    <p class="muted" style="margin-top:1.2rem">Acesso de {{ cliente.nome }} · guarde o link da área do aluno.</p>
+  </div>
+</section>
+{% endblock %}

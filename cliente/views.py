@@ -22,9 +22,8 @@ from .services import (
     buscar_pagamento_livepix,
     confirmar_pagamento,
     criar_pagamento_pix,
-    sincronizar_status_livepix,
 )
-from .whatsapp import aluno_wa_me_link, school_whatsapp_link
+from .whatsapp import school_whatsapp_link
 
 logger = logging.getLogger(__name__)
 
@@ -211,7 +210,11 @@ def pagamento(request: HttpRequest, token: str) -> HttpResponse:
         return redirect("cliente:sala", token=token)
     pagamento_obj = getattr(insc, "pagamento", None)
     if pagamento_obj is None:
-        pagamento_obj = criar_pagamento_pix(insc, request=request)
+        from .providers import get_payment_provider
+
+        pagamento_obj = get_payment_provider().create_enrollment_payment(
+            insc, request=request
+        )
     return render(
         request,
         "cliente/pagamento.html",
@@ -229,7 +232,9 @@ def pagamento_retorno(request: HttpRequest, token: str) -> HttpResponse:
     insc = get_object_or_404(Inscricao, token_acesso=token)
     pag = getattr(insc, "pagamento", None)
     if pag:
-        sincronizar_status_livepix(pag)
+        from .providers import get_payment_provider
+
+        get_payment_provider().sync_payment(pag)
         insc.refresh_from_db()
     if insc.status in (Inscricao.Status.PAGO, Inscricao.Status.CONFIRMADO):
         return redirect("cliente:sala", token=token)
@@ -256,37 +261,17 @@ def status_pagamento(request: HttpRequest, token: str) -> JsonResponse:
 
 @require_GET
 def sala(request: HttpRequest, token: str) -> HttpResponse:
+    """Compatibilidade: redireciona a sala antiga para a área do aluno."""
     insc = get_object_or_404(
-        Inscricao.objects.select_related("live", "live__curso", "cliente"),
+        Inscricao.objects.select_related("live", "cliente"),
         token_acesso=token,
     )
-    if insc.status not in (
-        Inscricao.Status.PAGO,
-        Inscricao.Status.CONFIRMADO,
-    ):
+    if not insc.libera_acesso():
         return redirect("cliente:pagamento", token=token)
-    live = insc.live
-    liberado = live.status in (Live.Status.CONFIRMADA, Live.Status.ABERTA, Live.Status.ENCERRADA)
-    alunos = (
-        live.inscricoes.select_related("cliente")
-        .filter(status__in=[Inscricao.Status.PAGO, Inscricao.Status.CONFIRMADO])
-        .order_by("criada_em")
-    )
-    return render(
-        request,
-        "cliente/sala.html",
-        {
-            "inscricao": insc,
-            "live": live,
-            "liberado": liberado,
-            "stream_url": live.stream_url,
-            "faltam": live.vagas_restantes,
-            "min_alunos": live.min_alunos,
-            "inscritos": live.inscritos_pagos,
-            "alunos": alunos,
-            "wa_confirm_url": aluno_wa_me_link(insc),
-            "whatsapp_url": school_whatsapp_link(),
-        },
+    return redirect(
+        "cliente:aluno_aula",
+        token=token,
+        live_id=insc.live_id,
     )
 
 

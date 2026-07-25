@@ -1,0 +1,55 @@
+{% extends "cliente/base.html" %}
+{% block title %}Minhas aulas — {{ cliente.nome }}{% endblock %}
+{% block content %}
+<section class="band page-top">
+  <div class="wrap">
+    <header class="band-head">
+      <p class="eyebrow">Área do aluno</p>
+      <h1>Minhas aulas</h1>
+      <p>{{ cliente.nome }} · {{ cliente.email }}</p>
+    </header>
+
+    <ul class="aula-cards">
+      {% for card in cards %}
+        <li class="aula-card">
+          <div class="aula-card-main">
+            <h2>{{ card.live.titulo }}</h2>
+            <p class="aula-meta">
+              {{ card.live.curso.nome }}
+              {% if card.live.professor %} · {{ card.live.professor }}{% endif %}
+            </p>
+            <p class="aula-when">
+              {{ card.live.data_hora|date:"d/m/Y" }} · {{ card.live.data_hora|date:"H:i" }}
+            </p>
+            {% if card.live.descricao %}
+              <p class="aula-desc">{{ card.live.descricao|truncatewords:28 }}</p>
+            {% endif %}
+          </div>
+          <div class="aula-card-actions">
+            {% if card.join.pode_entrar %}
+              <a class="btn primary sm" href="{{ card.join.url }}" target="_blank" rel="noopener">Entrar na Aula</a>
+            {% else %}
+              <span class="btn sm ghost-navy disabled">{{ card.join.label }}</span>
+            {% endif %}
+            {% if card.material %}
+              <a class="btn sm ghost-navy" href="{% url 'cliente:aluno_material' token=token material_id=card.material.pk %}">Baixar Material</a>
+            {% endif %}
+            {% if card.gravacao %}
+              <a class="btn sm ghost-navy" href="{% url 'cliente:aluno_gravacao' token=token gravacao_id=card.gravacao.pk %}" target="_blank" rel="noopener">Assistir Gravação</a>
+            {% endif %}
+            <a class="link-action" href="{% url 'cliente:aluno_aula' token=token live_id=card.live.pk %}">Ver detalhes →</a>
+          </div>
+          {% if card.campanha %}
+            <aside class="livepix-card">
+              <strong>Apoie esta aula pelo LivePix</strong>
+              <span>{{ card.campanha.nome_campanha }}</span>
+            </aside>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="aula-empty">Nenhuma aula liberada ainda.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}

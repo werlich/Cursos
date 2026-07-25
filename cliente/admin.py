@@ -6,7 +6,18 @@ from django.contrib import admin, messages
 from django.utils import timezone
 from django.utils.html import format_html
 
-from .models import Cliente, Credito, Curso, Depoimento, Inscricao, Live, Pagamento
+from .models import (
+    Cliente,
+    Credito,
+    Curso,
+    Depoimento,
+    Gravacao,
+    Inscricao,
+    Live,
+    LivePixCampanha,
+    Material,
+    Pagamento,
+)
 from .services import emitir_creditos_se_nao_atingiu, estornar_pagamento
 
 
@@ -33,37 +44,68 @@ class InscricaoInline(admin.TabularInline):
     can_delete = False
 
 
+class MaterialInline(admin.TabularInline):
+    model = Material
+    extra = 0
+    fields = ("titulo", "arquivo", "url", "ativo")
+
+
+class GravacaoInline(admin.TabularInline):
+    model = Gravacao
+    extra = 0
+    fields = ("titulo", "url", "publicado_em", "ativo")
+
+
+class LivePixCampanhaInline(admin.StackedInline):
+    model = LivePixCampanha
+    extra = 0
+    max_num = 1
+    fields = (
+        "nome_campanha",
+        "qr_code",
+        "qr_code_url",
+        "link_pagamento",
+        "meta_financeira",
+        "valor_arrecadado",
+        "ativo",
+    )
+
+
 @admin.register(Live)
 class LiveAdmin(admin.ModelAdmin):
     list_display = (
         "titulo",
         "curso",
+        "professor",
         "data_hora",
         "status",
         "inscritos_display",
         "min_alunos",
-        "tem_stream",
+        "tem_meet",
     )
     list_editable = ("min_alunos", "status")
     list_filter = ("status", "curso")
-    search_fields = ("titulo",)
+    search_fields = ("titulo", "professor", "descricao")
     fields = (
         "curso",
         "titulo",
+        "descricao",
+        "professor",
         "data_hora",
+        "duracao_minutos",
         "min_alunos",
         "status",
         "stream_url",
     )
-    inlines = [InscricaoInline]
+    inlines = [MaterialInline, GravacaoInline, LivePixCampanhaInline, InscricaoInline]
     actions = ["action_emitir_creditos", "action_marcar_confirmada", "action_encerrar"]
 
     @admin.display(description="Pagos")
     def inscritos_display(self, obj: Live) -> str:
         return f"{obj.inscritos_pagos}/{obj.min_alunos}"
 
-    @admin.display(boolean=True, description="OBS")
-    def tem_stream(self, obj: Live) -> bool:
+    @admin.display(boolean=True, description="Meet")
+    def tem_meet(self, obj: Live) -> bool:
         return bool(obj.stream_url)
 
     @admin.action(description="Emitir créditos (turma < mínimo)")
@@ -82,6 +124,33 @@ class LiveAdmin(admin.ModelAdmin):
     def action_encerrar(self, request, queryset):
         queryset.update(status=Live.Status.ENCERRADA)
         self.message_user(request, "Lives encerradas.", messages.SUCCESS)
+
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    list_display = ("titulo", "live", "ativo", "criado_em")
+    list_filter = ("ativo", "live__curso")
+    search_fields = ("titulo", "live__titulo")
+
+
+@admin.register(Gravacao)
+class GravacaoAdmin(admin.ModelAdmin):
+    list_display = ("titulo", "live", "ativo", "publicado_em")
+    list_filter = ("ativo", "live__curso")
+    search_fields = ("titulo", "live__titulo", "url")
+
+
+@admin.register(LivePixCampanha)
+class LivePixCampanhaAdmin(admin.ModelAdmin):
+    list_display = (
+        "nome_campanha",
+        "live",
+        "meta_financeira",
+        "valor_arrecadado",
+        "ativo",
+    )
+    list_filter = ("ativo",)
+    search_fields = ("nome_campanha", "live__titulo")
 
 
 @admin.register(Cliente)
