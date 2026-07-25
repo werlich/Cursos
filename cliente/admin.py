@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from django.contrib import admin, messages
+from django.db.models import Count
 from django.utils import timezone
 from django.utils.html import format_html
 
@@ -99,7 +100,15 @@ class LiveAdmin(admin.ModelAdmin):
         "stream_url",
     )
     inlines = [MaterialInline, GravacaoInline, LivePixCampanhaInline, InscricaoInline]
-    actions = ["action_emitir_creditos", "action_marcar_confirmada", "action_encerrar"]
+    # Mantém delete_selected do Django + ações customizadas
+    actions = [
+        "delete_selected",
+        "action_cancelar",
+        "action_excluir_sem_inscricoes",
+        "action_emitir_creditos",
+        "action_marcar_confirmada",
+        "action_encerrar",
+    ]
 
     @admin.display(description="Pagos")
     def inscritos_display(self, obj: Live) -> str:
@@ -108,6 +117,36 @@ class LiveAdmin(admin.ModelAdmin):
     @admin.display(boolean=True, description="Meet")
     def tem_meet(self, obj: Live) -> bool:
         return bool(obj.stream_url)
+
+    @admin.action(description="Cancelar lives selecionadas")
+    def action_cancelar(self, request, queryset):
+        n = queryset.update(status=Live.Status.CANCELADA)
+        self.message_user(
+            request,
+            f"{n} live(s) marcada(s) como cancelada(s). "
+            "(Lives com inscrição não podem ser apagadas — use cancelar.)",
+            messages.SUCCESS,
+        )
+
+    @admin.action(description="Excluir lives sem inscrição")
+    def action_excluir_sem_inscricoes(self, request, queryset):
+        sem = queryset.annotate(_n=Count("inscricoes")).filter(_n=0)
+        com = queryset.annotate(_n=Count("inscricoes")).filter(_n__gt=0)
+        deleted, _ = sem.delete()
+        blocked = com.count()
+        if deleted:
+            self.message_user(
+                request, f"{deleted} live(s) sem inscrição excluída(s).", messages.SUCCESS
+            )
+        if blocked:
+            self.message_user(
+                request,
+                f"{blocked} live(s) mantida(s): possuem inscrição (PROTECT). "
+                "Use “Cancelar lives selecionadas”.",
+                messages.WARNING,
+            )
+        if not deleted and not blocked:
+            self.message_user(request, "Nenhuma live selecionada.", messages.INFO)
 
     @admin.action(description="Emitir créditos (turma < mínimo)")
     def action_emitir_creditos(self, request, queryset):
