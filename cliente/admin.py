@@ -75,6 +75,7 @@ class LivePixCampanhaInline(admin.StackedInline):
 
 @admin.register(Live)
 class LiveAdmin(admin.ModelAdmin):
+    list_per_page = 10
     list_display = (
         "titulo",
         "curso",
