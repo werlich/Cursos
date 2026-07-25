@@ -45,8 +45,25 @@
               {% endif %}
               <span class="price">R$ {{ c.preco }}</span>
             </div>
-            <span class="meta">mín. {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</span>
-            <a class="link-action" href="{% url 'cliente:cadastro' %}">Inscrever →</a>
+            {% if c.proxima_live %}
+              <div
+                class="enroll-progress{% if c.progress_pct >= 100 %} is-full{% endif %}"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="{{ c.meta_alunos }}"
+                aria-valuenow="{{ c.inscritos }}"
+                aria-label="{{ c.inscritos }} de {{ c.meta_alunos }} inscritos"
+              >
+                <div class="enroll-progress-track">
+                  <div class="enroll-progress-bar" style="width: {{ c.progress_pct }}%"></div>
+                </div>
+                <span class="enroll-progress-label">{{ c.inscritos }}/{{ c.meta_alunos }} inscritos</span>
+              </div>
+              <a class="link-action" href="{% url 'cliente:cadastro' %}?live={{ c.proxima_live.pk }}">Inscrever →</a>
+            {% else %}
+              <span class="meta">mín. {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</span>
+              <a class="link-action" href="{% url 'cliente:cadastro' %}">Inscrever →</a>
+            {% endif %}
           </div>
         </li>
       {% empty %}
@@ -80,7 +97,19 @@
           </time>
           <div class="agenda-info">
             <strong>{{ live.titulo }}</strong>
-            <span>{{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos</span>
+            <div
+              class="enroll-progress enroll-progress--agenda{% if live.progresso_pct >= 100 %} is-full{% endif %}"
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="{{ live.min_alunos }}"
+              aria-valuenow="{{ live.inscritos_pagos }}"
+              aria-label="{{ live.inscritos_pagos }} de {{ live.min_alunos }} inscritos"
+            >
+              <div class="enroll-progress-track">
+                <div class="enroll-progress-bar" style="width: {{ live.progresso_pct }}%"></div>
+              </div>
+              <span class="enroll-progress-label">{{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos</span>
+            </div>
           </div>
           <a class="btn primary sm" href="{% url 'cliente:cadastro' %}?live={{ live.pk }}">Reservar</a>
         </li>

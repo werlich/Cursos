@@ -114,9 +114,17 @@ class Live(models.Model):
 
     @property
     def inscritos_pagos(self) -> int:
+        annotated = getattr(self, "inscritos_count", None)
+        if annotated is not None:
+            return int(annotated)
         return self.inscricoes.filter(
             status__in=[Inscricao.Status.PAGO, Inscricao.Status.CONFIRMADO]
         ).count()
+
+    @property
+    def progresso_pct(self) -> int:
+        meta = self.min_alunos or 1
+        return min(100, int(round(self.inscritos_pagos * 100 / meta)))
 
     @property
     def atingiu_minimo(self) -> bool:

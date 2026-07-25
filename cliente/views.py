@@ -8,6 +8,7 @@ import logging
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
+from django.db.models import Count, Q
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -68,14 +69,44 @@ def _lives_abertas():
             data_hora__gte=timezone.now() - timezone.timedelta(hours=2),
         )
         .select_related("curso")
+        .annotate(
+            inscritos_count=Count(
+                "inscricoes",
+                filter=Q(
+                    inscricoes__status__in=[
+                        Inscricao.Status.PAGO,
+                        Inscricao.Status.CONFIRMADO,
+                    ]
+                ),
+                distinct=True,
+            )
+        )
         .order_by("data_hora")
     )
 
 
 @require_GET
 def home(request: HttpRequest) -> HttpResponse:
-    cursos = Curso.objects.filter(ativo=True)
     lives = _lives_abertas()
+    proxima_por_curso = {}
+    for live in lives:
+        if live.curso_id not in proxima_por_curso:
+            proxima_por_curso[live.curso_id] = live
+
+    cursos = list(Curso.objects.filter(ativo=True))
+    for curso in cursos:
+        live = proxima_por_curso.get(curso.pk)
+        if live:
+            curso.proxima_live = live
+            curso.inscritos = live.inscritos_pagos
+            curso.meta_alunos = live.min_alunos
+            curso.progress_pct = live.progresso_pct
+        else:
+            curso.proxima_live = None
+            curso.inscritos = 0
+            curso.meta_alunos = curso.min_alunos_padrao
+            curso.progress_pct = 0
+
     form = CadastroInscricaoForm(lives_qs=lives)
     agenda_page = Paginator(lives, 5).get_page(request.GET.get("page") or 1)
     aprovados = list(
