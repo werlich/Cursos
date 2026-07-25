@@ -187,6 +187,20 @@ class CampanhaLivePixTests(LiveClassroomFixtures):
         self.assertContains(resp, "Apoie a turma")
         self.assertContains(resp, "Contribuir")
 
+    @override_settings(
+        LIVEPIX_WIDGET_URL="https://widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a"
+    )
+    def test_widget_livepix_embed(self):
+        url = reverse(
+            "cliente:aluno_aula",
+            kwargs={"token": self.insc.token_acesso, "live_id": self.live.pk},
+        )
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a")
+        self.assertContains(resp, "Apoie esta aula pelo LivePix")
+
+    @override_settings(LIVEPIX_WIDGET_URL="")
     def test_campanha_inativa_nao_aparece(self):
         LivePixCampanha.objects.create(
             live=self.live,
@@ -200,6 +214,7 @@ class CampanhaLivePixTests(LiveClassroomFixtures):
         )
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, "Oculta")
         self.assertNotContains(resp, "Apoie esta aula pelo LivePix")
 
 
