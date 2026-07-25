@@ -29,8 +29,8 @@ class Curso(models.Model):
     ativo = models.BooleanField(default=True)
     mostrar_aproveite = models.BooleanField(
         default=False,
-        verbose_name="Banner Aproveite!",
-        help_text="Exibe o selo “Aproveite!” ao lado do preço na página de cursos.",
+        verbose_name="Banner Promocional",
+        help_text="Exibe o selo “Promocional” acima do preço na página de cursos.",
     )
     ordem = models.PositiveSmallIntegerField(default=0)
 
