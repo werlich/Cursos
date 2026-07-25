@@ -88,52 +88,55 @@
       <h2>Agenda</h2>
       <p>{{ dias_live }} · 19h</p>
     </header>
-    <ul class="agenda-rows">
-      {% for live in lives %}
-        <li>
-          <time datetime="{{ live.data_hora|date:'c' }}">
-            <span class="d">{{ live.data_hora|date:"d/m" }}</span>
-            <span class="w">{{ live.data_hora|date:"D" }} · {{ live.data_hora|date:"H:i" }}</span>
-          </time>
-          <div class="agenda-info">
-            <strong>{{ live.titulo }}</strong>
-            <div
-              class="enroll-progress enroll-progress--agenda{% if live.progresso_pct >= 100 %} is-full{% endif %}"
-              role="progressbar"
-              aria-valuemin="0"
-              aria-valuemax="{{ live.min_alunos }}"
-              aria-valuenow="{{ live.inscritos_pagos }}"
-              aria-label="{{ live.inscritos_pagos }} de {{ live.min_alunos }} inscritos"
-            >
-              <div class="enroll-progress-track">
-                <div class="enroll-progress-bar" style="width: {{ live.progresso_pct }}%"></div>
+
+    <div class="month-cal" aria-label="Agenda do mês">
+      <div class="month-cal-toolbar">
+        <a class="month-cal-nav" href="?mes={{ agenda_prev_mes }}#agenda" aria-label="Mês anterior">‹</a>
+        <h3 class="month-cal-title" id="agenda-month-title">{{ agenda_month_label|title }}</h3>
+        <a class="month-cal-nav" href="?mes={{ agenda_next_mes }}#agenda" aria-label="Próximo mês">›</a>
+      </div>
+
+      <div class="month-cal-grid" role="grid" aria-labelledby="agenda-month-title">
+        <div class="month-cal-weekdays" role="row">
+          {% for day_name in agenda_weekdays %}
+            <div class="month-cal-weekday" role="columnheader">{{ day_name }}</div>
+          {% endfor %}
+        </div>
+        {% for week in agenda_weeks %}
+          <div class="month-cal-week" role="row">
+            {% for day in week %}
+              <div
+                class="month-cal-day{% if not day.in_month %} is-out{% endif %}{% if day.is_today %} is-today{% endif %}{% if day.is_weekend %} is-weekend{% endif %}{% if day.lives %} has-events{% endif %}"
+                role="gridcell"
+              >
+                <time class="month-cal-date" datetime="{{ day.date|date:'Y-m-d' }}">{{ day.date.day }}</time>
+                {% if day.lives %}
+                  <ul class="month-cal-events">
+                    {% for live in day.lives %}
+                      <li>
+                        <a
+                          class="month-cal-event{% if live.progresso_pct >= 100 %} is-full{% endif %}"
+                          href="{% url 'cliente:cadastro' %}?live={{ live.pk }}"
+                          title="{{ live.titulo }} · {{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos"
+                        >
+                          <span class="month-cal-event-time">{{ live.data_hora|date:"H:i" }}</span>
+                          <span class="month-cal-event-title">{{ live.curso.nome }}</span>
+                          <span class="month-cal-event-meta">{{ live.inscritos_pagos }}/{{ live.min_alunos }}</span>
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
               </div>
-              <span class="enroll-progress-label">{{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos</span>
-            </div>
+            {% endfor %}
           </div>
-          <a class="btn primary sm" href="{% url 'cliente:cadastro' %}?live={{ live.pk }}">Reservar</a>
-        </li>
-      {% empty %}
-        <li class="agenda-empty">Nenhum curso aberto no momento.</li>
-      {% endfor %}
-    </ul>
-    {% if agenda_page.paginator.num_pages > 1 %}
-      <nav class="agenda-pager" aria-label="Páginas da agenda">
-        {% if agenda_page.has_previous %}
-          <a class="btn sm ghost-navy" href="?page={{ agenda_page.previous_page_number }}#agenda">← Anterior</a>
-        {% else %}
-          <span class="btn sm ghost-navy disabled" aria-disabled="true">← Anterior</span>
-        {% endif %}
-        <span class="agenda-pager-meta">
-          Página {{ agenda_page.number }} de {{ agenda_page.paginator.num_pages }}
-        </span>
-        {% if agenda_page.has_next %}
-          <a class="btn sm ghost-navy" href="?page={{ agenda_page.next_page_number }}#agenda">Próxima →</a>
-        {% else %}
-          <span class="btn sm ghost-navy disabled" aria-disabled="true">Próxima →</span>
-        {% endif %}
-      </nav>
-    {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if not agenda_has_events %}
+        <p class="month-cal-empty">Nenhum curso agendado neste mês.</p>
+      {% endif %}
+    </div>
   </div>
 </section>
 
