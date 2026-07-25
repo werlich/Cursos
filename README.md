@@ -52,4 +52,14 @@ git push origin main
 1. Acessa `https://live.signau.cc`
 2. Informa nome, e-mail, WhatsApp e escolhe a live
 3. É redirecionado ao checkout LivePix (PIX)
-4. Após pagamento, volta à sala (link OBS quando o admin publicar `stream_url`)
+4. Após pagamento, acessa a área do aluno (`/aluno/<token>/`) com Meet, materiais, gravação e widget LivePix
+
+## Como testar o processo completo
+
+Veja o roteiro em [TESTING.md](TESTING.md).
+
+Atalho local/VPS para preparar Live + liberar inscrição sem PIX:
+
+```bash
+python manage.py prepare_e2e_test --minutes 10 --email seu@email.com
+```
