@@ -288,36 +288,61 @@ a:hover { text-decoration: underline; }
 .course-main p { margin: 0; color: var(--muted); }
 .course-side {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 0.75rem 1.1rem;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: right;
 }
-.price-row {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.45rem 0.65rem;
+.price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
 }
 .price {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--navy);
   letter-spacing: -0.02em;
+  line-height: 1.1;
 }
-.price-badge {
-  display: inline-block;
-  padding: 0.2rem 0.55rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.price-stack.has-badge .price {
+  font-size: 1.55rem;
+}
+.price-ribbon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--navy);
-  background: var(--gold-soft);
-  border: 1px solid var(--gold);
-  border-radius: 4px;
-  line-height: 1.2;
+  color: #fff;
+  background: linear-gradient(135deg, #b8923f 0%, var(--gold) 45%, #e0c57a 100%);
+  border-radius: 999px;
+  line-height: 1;
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(194, 163, 91, 0.35);
+  animation: price-ribbon-in 0.55s ease both;
+}
+.price-ribbon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 1px;
+  z-index: -1;
+}
+@keyframes price-ribbon-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .meta { color: var(--muted); font-size: 0.9rem; }
 .link-action {
@@ -902,8 +927,10 @@ a:hover { text-decoration: underline; }
   }
   .course-side {
     grid-column: 2;
-    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
   }
+  .price-stack { align-items: flex-start; }
   .agenda-rows > li {
     grid-template-columns: 5rem 1fr;
   }
