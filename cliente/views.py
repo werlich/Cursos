@@ -111,7 +111,7 @@ def home(request: HttpRequest) -> HttpResponse:
             "avaliacao_url": avaliacao_url,
             "avaliacao_qr": qr_data_uri(avaliacao_url),
             "whatsapp_url": school_whatsapp_link(
-                "Olá! Vim pelo site live.signau.cc e quero saber mais sobre os cursos."
+                "Olá! Vim pelo site cursos.signau.cc e quero saber mais sobre os cursos."
             ),
         },
     )

@@ -21,7 +21,7 @@ def _absolute_retorno_url(request, token: str) -> str:
     path = reverse("cliente:pagamento_retorno", kwargs={"token": token})
     if request is not None:
         return request.build_absolute_uri(path)
-    base = getattr(settings, "SITE_URL", "https://live.signau.cc").rstrip("/")
+    base = getattr(settings, "SITE_URL", "https://cursos.signau.cc").rstrip("/")
     return f"{base}{path}"
 
 

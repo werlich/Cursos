@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Provisiona Cursos Live na VPS (padrão SIGNAU).
 # Uso (como root na VPS):
-#   bash provision_cursos.sh live live.signau.cc 8003 "Cursos Live"
+#   bash provision_cursos.sh live cursos.signau.cc 8003 "Cursos Live"
 set -euo pipefail
 
 CLIENT_ID="${1:?Uso: provision_cursos.sh CLIENT_ID DOMAIN GUNICORN_PORT [NOME]}"

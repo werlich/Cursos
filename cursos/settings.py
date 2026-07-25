@@ -33,7 +33,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() in ("1", "true", "yes")
 ALLOWED_HOSTS = [
     h.strip()
     for h in os.environ.get(
-        "DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,live.signau.cc"
+        "DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,cursos.signau.cc"
     ).split(",")
     if h.strip()
 ]
@@ -41,7 +41,7 @@ CSRF_TRUSTED_ORIGINS = [
     o.strip()
     for o in os.environ.get(
         "DJANGO_CSRF_TRUSTED_ORIGINS",
-        "https://live.signau.cc,http://live.signau.cc,http://127.0.0.1:8000",
+        "https://cursos.signau.cc,http://cursos.signau.cc,http://127.0.0.1:8000",
     ).split(",")
     if o.strip()
 ]
@@ -143,7 +143,7 @@ if not DEBUG:
     SESSION_COOKIE_SAMESITE = "Lax"
     CSRF_COOKIE_SAMESITE = "Lax"
 
-SITE_URL = os.environ.get("SITE_URL", "https://live.signau.cc").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "https://cursos.signau.cc").rstrip("/")
 
 # LivePix
 LIVEPIX_CLIENT_ID = os.environ.get("LIVEPIX_CLIENT_ID", "")

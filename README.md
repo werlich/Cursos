@@ -1,6 +1,6 @@
 # SIGNAU Cursos
 
-Plataforma de cursos online em **live.signau.cc**: cadastro de interessados, pagamento PIX (**LivePix**) e área do aluno com Meet, materiais e gravação.
+Plataforma de cursos online em **cursos.signau.cc**: cadastro de interessados, pagamento PIX (**LivePix**) e área do aluno com Meet, materiais e gravação.
 
 ## Stack
 
@@ -35,7 +35,7 @@ python manage.py runserver
 
 ## Produção (VPS)
 
-1. DNS `live.signau.cc` → VPS
+1. DNS `cursos.signau.cc` → VPS
 2. Provision (primeira vez) via `deploy/provision_cursos.sh`
 3. Deploys:
 
@@ -45,11 +45,11 @@ git push origin main
 ```
 
 4. LivePix: em `/var/www/cursos/.env` preencha `LIVEPIX_CLIENT_ID`, `LIVEPIX_CLIENT_SECRET`, `LIVEPIX_DEMO=false`.
-5. Webhook: `https://live.signau.cc/webhooks/livepix/` (painel LivePix ou `POST /v2/webhooks`).
+5. Webhook: `https://cursos.signau.cc/webhooks/livepix/` (painel LivePix ou `POST /v2/webhooks`).
 
 ## Fluxo do aluno
 
-1. Acessa `https://live.signau.cc`
+1. Acessa `https://cursos.signau.cc`
 2. Informa nome, e-mail, WhatsApp e escolhe o curso
 3. É redirecionado ao checkout LivePix (PIX)
 4. Após pagamento, acessa a área do aluno (`/aluno/<token>/`) com Meet, materiais, gravação e widget LivePix

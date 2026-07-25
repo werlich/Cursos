@@ -1,4 +1,4 @@
-# Como testar o processo completo (live.signau.cc)
+# Como testar o processo completo (cursos.signau.cc)
 
 Produção usa PIX real (`LIVEPIX_DEMO=false`). Para testar sem gastar, use o **Caminho A** (atalho no admin).
 
@@ -22,7 +22,7 @@ Cobre: janela Meet, ACL, redirect `/sala/` → área do aluno, widget, materiais
 
 ## 2) Preparar curso no admin
 
-`https://live.signau.cc/admin/`
+`https://cursos.signau.cc/admin/`
 
 1. Título, descrição, professor  
 2. Data/hora ≈ daqui a 10 minutos  
@@ -33,7 +33,7 @@ Cobre: janela Meet, ACL, redirect `/sala/` → área do aluno, widget, materiais
 
 ## 3) Caminho A — sem pagar (recomendado)
 
-1. [Cadastro](https://live.signau.cc/cadastro/) com e-mail novo + curso de teste  
+1. [Cadastro](https://cursos.signau.cc/cadastro/) com e-mail novo + curso de teste  
 2. Na tela de pagamento, **não pague**  
 3. Admin → Inscrições → status **Pago** (ou Confirmado)  
 4. Copie `token_acesso`  
@@ -57,7 +57,7 @@ Cobre: janela Meet, ACL, redirect `/sala/` → área do aluno, widget, materiais
 3. Retorno/webhook deve liberar a área do aluno  
 4. Admin: inscrição Pago/Confirmado, pagamento Confirmado, `livepix_payment_id` preenchido  
 
-Webhook: `https://live.signau.cc/webhooks/livepix/`
+Webhook: `https://cursos.signau.cc/webhooks/livepix/`
 
 ## 5) Janela Meet (3 momentos)
 

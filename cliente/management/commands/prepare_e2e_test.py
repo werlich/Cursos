@@ -91,7 +91,7 @@ class Command(BaseCommand):
             self.stdout.write(
                 "Sem --email: cadastre no site e marque a inscrição como Pago no admin."
             )
-            self.stdout.write(f"Cadastro: https://live.signau.cc/cadastro/?live={live.pk}")
+            self.stdout.write(f"Cadastro: https://cursos.signau.cc/cadastro/?live={live.pk}")
             return
 
         cliente, _ = Cliente.objects.update_or_create(
@@ -123,7 +123,7 @@ class Command(BaseCommand):
                 pag.confirmado_em = timezone.now()
                 pag.save(update_fields=["status", "confirmado_em"])
 
-        base = "https://live.signau.cc"
+        base = "https://cursos.signau.cc"
         self.stdout.write(self.style.SUCCESS(f"Inscrição liberada: {insc.pk}"))
         self.stdout.write(f"Token: {insc.token_acesso}")
         self.stdout.write(f"Área aluno: {base}/aluno/{insc.token_acesso}/")
