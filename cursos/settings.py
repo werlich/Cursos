@@ -158,7 +158,13 @@ LIVEPIX_DEMO = os.environ.get("LIVEPIX_DEMO", "true").lower() in ("1", "true", "
 LIVEPIX_WIDGET_URL = os.environ.get(
     "LIVEPIX_WIDGET_URL",
     "https://widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a",
-).strip()
+)
+# Página pública LivePix (gera PIX real). O widget de QR tipo “profile” só aponta
+# para esta URL — apps de banco falham se escanearem esse QR como chave PIX.
+LIVEPIX_PROFILE_URL = os.environ.get(
+    "LIVEPIX_PROFILE_URL",
+    "https://livepix.gg/capitaoamador",
+).rstrip("/").strip()
 
 # WhatsApp
 WHATSAPP_SCHOOL_NUMBER = os.environ.get("WHATSAPP_SCHOOL_NUMBER", "47933835108")

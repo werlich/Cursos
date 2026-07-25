@@ -20,6 +20,15 @@ def _livepix_widget_url(campanha=None) -> str:
     return (getattr(settings, "LIVEPIX_WIDGET_URL", "") or "").strip()
 
 
+def _livepix_contribute_url(campanha=None) -> str:
+    """URL da página LivePix onde o PIX de doação é gerado de verdade."""
+    if campanha is not None:
+        link = (campanha.link_pagamento or "").strip()
+        if link:
+            return link
+    return (getattr(settings, "LIVEPIX_PROFILE_URL", "") or "").strip()
+
+
 def _inscricao_por_token(token: str) -> Inscricao:
     return get_object_or_404(
         Inscricao.objects.select_related("cliente", "live", "live__curso"),
@@ -88,6 +97,7 @@ class AlunoAulasView(AlunoTokenMixin, ListView):
                     "gravacao": gravacao,
                     "campanha": campanha,
                     "livepix_widget_url": _livepix_widget_url(campanha),
+                    "livepix_contribute_url": _livepix_contribute_url(campanha),
                 }
             )
         ctx["cards"] = cards
@@ -133,6 +143,7 @@ class AlunoAulaDetailView(AlunoTokenMixin, DetailView):
         if campanha and not campanha.ativo:
             campanha = None
         widget_url = _livepix_widget_url(campanha)
+        contribute_url = _livepix_contribute_url(campanha)
         ctx.update(
             {
                 "token": self.inscricao.token_acesso,
@@ -143,6 +154,7 @@ class AlunoAulaDetailView(AlunoTokenMixin, DetailView):
                 "gravacoes": live.gravacoes.filter(ativo=True),
                 "campanha": campanha,
                 "livepix_widget_url": widget_url,
+                "livepix_contribute_url": contribute_url,
                 "alunos": (
                     live.inscricoes.select_related("cliente")
                     .filter(

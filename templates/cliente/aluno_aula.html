@@ -40,7 +40,7 @@
       {% endfor %}
     </div>
 
-    {% if campanha or livepix_widget_url %}
+    {% if campanha or livepix_contribute_url or livepix_widget_url %}
       <aside class="livepix-support" aria-label="Apoio LivePix">
         <h2>Apoie esta aula pelo LivePix</h2>
         {% if campanha %}
@@ -49,7 +49,13 @@
             <p class="muted">Meta R$ {{ campanha.meta_financeira }} · Arrecadado R$ {{ campanha.valor_arrecadado }}</p>
           {% endif %}
         {% endif %}
-        {% if livepix_widget_url %}
+        {% if livepix_contribute_url %}
+          <p class="muted">Abra o LivePix, escolha o valor e pague o QR gerado lá com o app do banco.</p>
+          <a class="btn primary" href="{{ livepix_contribute_url }}" target="_blank" rel="noopener">Contribuir com PIX</a>
+          <p class="muted">Não escaneie o QR desta página no app do banco — ele só abre o link do LivePix.</p>
+        {% elif campanha.qr_display_url %}
+          <img class="livepix-qr" src="{{ campanha.qr_display_url }}" alt="QR Code LivePix" width="180" height="180">
+        {% elif livepix_widget_url %}
           <div class="livepix-widget">
             <iframe
               src="{{ livepix_widget_url }}"
@@ -59,12 +65,6 @@
               allow="payment *"
             ></iframe>
           </div>
-        {% elif campanha.qr_display_url %}
-          <img class="livepix-qr" src="{{ campanha.qr_display_url }}" alt="QR Code LivePix" width="180" height="180">
-        {% endif %}
-        {% if campanha and campanha.link_pagamento %}
-          <p class="muted">ou</p>
-          <a class="btn primary" href="{{ campanha.link_pagamento }}" target="_blank" rel="noopener">Contribuir</a>
         {% endif %}
       </aside>
     {% endif %}

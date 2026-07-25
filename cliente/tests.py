@@ -185,10 +185,12 @@ class CampanhaLivePixTests(LiveClassroomFixtures):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Apoie esta aula pelo LivePix")
         self.assertContains(resp, "Apoie a turma")
-        self.assertContains(resp, "Contribuir")
+        self.assertContains(resp, "Contribuir com PIX")
+        self.assertContains(resp, "https://livepix.gg/demo")
 
     @override_settings(
-        LIVEPIX_WIDGET_URL="https://widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a"
+        LIVEPIX_PROFILE_URL="",
+        LIVEPIX_WIDGET_URL="https://widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a",
     )
     def test_widget_livepix_embed(self):
         url = reverse(
@@ -200,7 +202,7 @@ class CampanhaLivePixTests(LiveClassroomFixtures):
         self.assertContains(resp, "widget.livepix.gg/embed/ffe2e2ee-e6df-45cc-89e0-4475b54b7e9a")
         self.assertContains(resp, "Apoie esta aula pelo LivePix")
 
-    @override_settings(LIVEPIX_WIDGET_URL="")
+    @override_settings(LIVEPIX_WIDGET_URL="", LIVEPIX_PROFILE_URL="")
     def test_campanha_inativa_nao_aparece(self):
         LivePixCampanha.objects.create(
             live=self.live,
@@ -216,6 +218,18 @@ class CampanhaLivePixTests(LiveClassroomFixtures):
         self.assertEqual(resp.status_code, 200)
         self.assertNotContains(resp, "Oculta")
         self.assertNotContains(resp, "Apoie esta aula pelo LivePix")
+
+    @override_settings(LIVEPIX_PROFILE_URL="https://livepix.gg/capitaoamador")
+    def test_contribute_url_prioriza_pagina_livepix(self):
+        url = reverse(
+            "cliente:aluno_aula",
+            kwargs={"token": self.insc.token_acesso, "live_id": self.live.pk},
+        )
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Contribuir com PIX")
+        self.assertContains(resp, "https://livepix.gg/capitaoamador")
+        self.assertNotContains(resp, "widget.livepix.gg/embed/")
 
 
 class MaterialGravacaoTests(LiveClassroomFixtures):
