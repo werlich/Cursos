@@ -16,6 +16,7 @@ class Curso(models.Model):
         ARRAIS_MOTONAUTA = "arrais_motonauta", "Arrais-Amador e Motonauta"
         MESTRE = "mestre", "Mestre-Amador"
         CAPITAO = "capitao", "Capitão-Amador"
+        OPERADOR_RADIO = "operador_radio", "Operador Radiotelefonista Geral"
 
     tipo = models.CharField(max_length=20, choices=Tipo.choices)
     nome = models.CharField(max_length=80)
@@ -45,6 +46,7 @@ class Curso(models.Model):
             self.Tipo.ARRAIS_MOTONAUTA: "img/cursos/arrais_motonauta.jpg",
             self.Tipo.MESTRE: "img/cursos/mestre.jpg",
             self.Tipo.CAPITAO: "img/cursos/mestre.jpg",
+            self.Tipo.OPERADOR_RADIO: "img/cursos/operador_radio.jpg",
         }
         return mapping.get(self.tipo, "img/cursos/arrais.jpg")
 
@@ -56,6 +58,7 @@ class Curso(models.Model):
             self.Tipo.ARRAIS_MOTONAUTA: "Lancha e jet ski — Arrais-Amador e Motonauta",
             self.Tipo.MESTRE: "Cartas náuticas — curso Mestre-Amador",
             self.Tipo.CAPITAO: "Cartas náuticas — curso Capitão-Amador",
+            self.Tipo.OPERADOR_RADIO: "Rádio VHF — curso Operador Radiotelefonista Geral",
         }
         return alts.get(self.tipo, self.nome)
 

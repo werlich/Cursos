@@ -57,6 +57,15 @@ CURSOS = [
         10,
         False,
     ),
+    (
+        Curso.Tipo.OPERADOR_RADIO,
+        "Operador Radiotelefonista Geral",
+        "Preparatório online para o exame de Operador Radiotelefonista Geral.",
+        5,
+        Decimal("29.90"),
+        5,
+        True,
+    ),
 ]
 
 
