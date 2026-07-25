@@ -117,11 +117,10 @@
                         <a
                           class="month-cal-event{% if live.progresso_pct >= 100 %} is-full{% endif %}"
                           href="{% url 'cliente:cadastro' %}?live={{ live.pk }}"
-                          title="{{ live.titulo }} · {{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos"
+                          title="{{ live.curso.nome }} · {{ live.data_hora|date:'H:i' }} · {{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos"
                         >
                           <span class="month-cal-event-time">{{ live.data_hora|date:"H:i" }}</span>
                           <span class="month-cal-event-title">{{ live.curso.nome }}</span>
-                          <span class="month-cal-event-meta">{{ live.inscritos_pagos }}/{{ live.min_alunos }}</span>
                         </a>
                       </li>
                     {% endfor %}

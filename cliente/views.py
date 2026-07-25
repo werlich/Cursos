@@ -6,7 +6,7 @@ import calendar
 import json
 import logging
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
 from django.db import IntegrityError, transaction
@@ -112,18 +112,28 @@ def _shift_month(month_start: date, delta: int) -> date:
     return date(year, month, 1)
 
 
+def _local_day_bounds(day: date):
+    """Inclusive start / exclusive end of a local calendar day (avoids MySQL __date TZ bugs)."""
+    tz = timezone.get_current_timezone()
+    start = timezone.make_aware(datetime.combine(day, time.min), tz)
+    end = timezone.make_aware(datetime.combine(day + timedelta(days=1), time.min), tz)
+    return start, end
+
+
 def _agenda_month_context(month_start: date) -> dict:
     today = timezone.localdate()
     next_month = _shift_month(month_start, 1)
     prev_month = _shift_month(month_start, -1)
+    range_start, _ = _local_day_bounds(month_start)
+    range_end, _ = _local_day_bounds(next_month)
 
     lives_mes = list(
         _lives_annotated()
         .filter(
             status__in=[Live.Status.ABERTA, Live.Status.CONFIRMADA],
             curso__ativo=True,
-            data_hora__date__gte=month_start,
-            data_hora__date__lt=next_month,
+            data_hora__gte=range_start,
+            data_hora__lt=range_end,
         )
         .order_by("data_hora")
     )
