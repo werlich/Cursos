@@ -24,15 +24,24 @@ from .services import emitir_creditos_se_nao_atingiu, estornar_pagamento
 
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "tipo", "preco", "min_alunos_padrao", "ativo", "ordem")
-    list_editable = ("preco", "min_alunos_padrao", "ativo", "ordem")
-    list_filter = ("ativo", "tipo")
+    list_display = (
+        "nome",
+        "tipo",
+        "preco",
+        "min_alunos_padrao",
+        "mostrar_aproveite",
+        "ativo",
+        "ordem",
+    )
+    list_editable = ("preco", "min_alunos_padrao", "mostrar_aproveite", "ativo", "ordem")
+    list_filter = ("ativo", "mostrar_aproveite", "tipo")
     fields = (
         "nome",
         "tipo",
         "descricao",
         "preco",
         "min_alunos_padrao",
+        "mostrar_aproveite",
         "ativo",
         "ordem",
     )

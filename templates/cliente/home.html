@@ -39,7 +39,12 @@
             <p>{{ c.descricao }}</p>
           </div>
           <div class="course-side">
-            <span class="price">R$ {{ c.preco }}</span>
+            <div class="price-row">
+              <span class="price">R$ {{ c.preco }}</span>
+              {% if c.mostrar_aproveite %}
+                <span class="price-badge">Aproveite!</span>
+              {% endif %}
+            </div>
             <span class="meta">mín. {{ c.min_alunos_padrao }} aluno{{ c.min_alunos_padrao|pluralize }}</span>
             <a class="link-action" href="{% url 'cliente:cadastro' %}">Inscrever →</a>
           </div>

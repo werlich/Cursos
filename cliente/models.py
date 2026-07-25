@@ -27,6 +27,11 @@ class Curso(models.Model):
         help_text="Mínimo de alunos pagos para fechar turma neste curso (padrão das turmas)",
     )
     ativo = models.BooleanField(default=True)
+    mostrar_aproveite = models.BooleanField(
+        default=False,
+        verbose_name="Banner Aproveite!",
+        help_text="Exibe o selo “Aproveite!” ao lado do preço na página de cursos.",
+    )
     ordem = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
