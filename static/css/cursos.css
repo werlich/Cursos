@@ -471,6 +471,17 @@ a:hover { text-decoration: underline; }
 .month-cal-day.has-events:not(.is-out) {
   background: rgba(14, 111, 140, 0.06);
 }
+.month-cal-day.is-past.has-events:not(.is-out) {
+  background: rgba(5, 48, 80, 0.05);
+  filter: grayscale(0.55);
+  opacity: 0.72;
+  pointer-events: none;
+  user-select: none;
+}
+.month-cal-day.is-past.has-events .month-cal-date {
+  background: rgba(5, 48, 80, 0.35);
+  color: #fff;
+}
 .month-cal-date {
   display: inline-flex;
   align-items: center;
@@ -518,6 +529,26 @@ a:hover { text-decoration: underline; }
 .month-cal-event.is-full {
   background: rgba(31, 138, 76, 0.14);
   border-left-color: #1f8a4c;
+}
+.month-cal-event.is-past {
+  background: rgba(5, 48, 80, 0.08);
+  border-left-color: rgba(5, 48, 80, 0.35);
+  color: var(--muted);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.month-cal-event.is-past .month-cal-event-time,
+.month-cal-event.is-past .month-cal-event-title {
+  color: var(--muted);
+}
+.month-cal-event-lock {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(5, 48, 80, 0.55);
 }
 .month-cal-event-time {
   font-size: 0.7rem;

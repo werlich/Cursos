@@ -106,7 +106,7 @@
           <div class="month-cal-week" role="row">
             {% for day in week %}
               <div
-                class="month-cal-day{% if not day.in_month %} is-out{% endif %}{% if day.is_today %} is-today{% endif %}{% if day.is_weekend %} is-weekend{% endif %}{% if day.lives %} has-events{% endif %}"
+                class="month-cal-day{% if not day.in_month %} is-out{% endif %}{% if day.is_today %} is-today{% endif %}{% if day.is_past %} is-past{% endif %}{% if day.is_weekend %} is-weekend{% endif %}{% if day.lives %} has-events{% endif %}"
                 role="gridcell"
               >
                 <time class="month-cal-date" datetime="{{ day.date|date:'Y-m-d' }}">{{ day.date.day }}</time>
@@ -114,27 +114,52 @@
                   <ul class="month-cal-events">
                     {% for live in day.lives %}
                       <li>
-                        <a
-                          class="month-cal-event{% if live.progresso_pct >= 100 %} is-full{% endif %}"
-                          href="{% url 'cliente:cadastro' %}?live={{ live.pk }}"
-                          title="{{ live.curso.nome }} · {{ live.data_hora|date:'H:i' }} · {{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos"
-                        >
-                          <span class="month-cal-event-time">{{ live.data_hora|date:"H:i" }}</span>
-                          <span class="month-cal-event-title">{{ live.curso.nome }}</span>
-                          <span
-                            class="enroll-progress enroll-progress--cal{% if live.progresso_pct >= 100 %} is-full{% endif %}"
-                            role="progressbar"
-                            aria-valuemin="0"
-                            aria-valuemax="{{ live.min_alunos }}"
-                            aria-valuenow="{{ live.inscritos_pagos }}"
-                            aria-label="{{ live.inscritos_pagos }} de {{ live.min_alunos }} inscritos"
+                        {% if live.is_past or day.is_past %}
+                          <div
+                            class="month-cal-event is-past{% if live.progresso_pct >= 100 %} is-full{% endif %}"
+                            aria-disabled="true"
+                            title="{{ live.curso.nome }} · encerrado · {{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos"
                           >
-                            <span class="enroll-progress-track">
-                              <span class="enroll-progress-bar" style="width: {{ live.progresso_pct }}%"></span>
+                            <span class="month-cal-event-time">{{ live.data_hora|date:"H:i" }}</span>
+                            <span class="month-cal-event-title">{{ live.curso.nome }}</span>
+                            <span
+                              class="enroll-progress enroll-progress--cal{% if live.progresso_pct >= 100 %} is-full{% endif %}"
+                              role="progressbar"
+                              aria-valuemin="0"
+                              aria-valuemax="{{ live.min_alunos }}"
+                              aria-valuenow="{{ live.inscritos_pagos }}"
+                              aria-label="{{ live.inscritos_pagos }} de {{ live.min_alunos }} inscritos"
+                            >
+                              <span class="enroll-progress-track">
+                                <span class="enroll-progress-bar" style="width: {{ live.progresso_pct }}%"></span>
+                              </span>
+                              <span class="enroll-progress-label">{{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos</span>
                             </span>
-                            <span class="enroll-progress-label">{{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos</span>
-                          </span>
-                        </a>
+                            <span class="month-cal-event-lock">Encerrado</span>
+                          </div>
+                        {% else %}
+                          <a
+                            class="month-cal-event{% if live.progresso_pct >= 100 %} is-full{% endif %}"
+                            href="{% url 'cliente:cadastro' %}?live={{ live.pk }}"
+                            title="{{ live.curso.nome }} · {{ live.data_hora|date:'H:i' }} · {{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos"
+                          >
+                            <span class="month-cal-event-time">{{ live.data_hora|date:"H:i" }}</span>
+                            <span class="month-cal-event-title">{{ live.curso.nome }}</span>
+                            <span
+                              class="enroll-progress enroll-progress--cal{% if live.progresso_pct >= 100 %} is-full{% endif %}"
+                              role="progressbar"
+                              aria-valuemin="0"
+                              aria-valuemax="{{ live.min_alunos }}"
+                              aria-valuenow="{{ live.inscritos_pagos }}"
+                              aria-label="{{ live.inscritos_pagos }} de {{ live.min_alunos }} inscritos"
+                            >
+                              <span class="enroll-progress-track">
+                                <span class="enroll-progress-bar" style="width: {{ live.progresso_pct }}%"></span>
+                              </span>
+                              <span class="enroll-progress-label">{{ live.inscritos_pagos }}/{{ live.min_alunos }} inscritos</span>
+                            </span>
+                          </a>
+                        {% endif %}
                       </li>
                     {% endfor %}
                   </ul>

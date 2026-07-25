@@ -138,9 +138,12 @@ def _agenda_month_context(month_start: date) -> dict:
         .order_by("data_hora")
     )
 
+    now = timezone.now()
     by_day: dict[date, list] = defaultdict(list)
     for live in lives_mes:
-        by_day[timezone.localtime(live.data_hora).date()].append(live)
+        local_dt = timezone.localtime(live.data_hora)
+        live.is_past = local_dt < now
+        by_day[local_dt.date()].append(live)
 
     cal = calendar.Calendar(firstweekday=calendar.MONDAY)
     weeks = []
@@ -151,6 +154,7 @@ def _agenda_month_context(month_start: date) -> dict:
                     "date": day,
                     "in_month": day.month == month_start.month,
                     "is_today": day == today,
+                    "is_past": day < today,
                     "is_weekend": day.weekday() >= 5,
                     "lives": by_day.get(day, []),
                 }
